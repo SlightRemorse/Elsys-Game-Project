@@ -125,6 +125,18 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		case WM_KEYDOWN:
 		{
 			main_Input->KeyDown((unsigned int)wparam);
+			
+			//Cycle Windowed/FullScreen
+			if((main_Input->IsKeyDown(VK_RETURN)) && (main_Input->IsKeyDown(VK_CONTROL))) {
+				if(FULLSCREEN==false) 
+				{
+					//Implement Going to Fullscreen
+				} else 
+				{
+					//Implement Going to Windowed Mode
+				}
+			}
+
 			return 0;
 		}
 
@@ -167,10 +179,9 @@ bool SystemClass::Frame()
 
 void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 {
-	WNDCLASSEX wc; // Window Class
+	WNDCLASSEX wc;
 	DEVMODE dmScreenSettings;
 	int posX, posY;
-
 
 	// Get an external pointer to this object.
 	ApplicationHandle = this;
@@ -222,8 +233,8 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	else
 	{
 		// If windowed then set it to screenWidth x screenHeight resolution.
-		screenWidth  = 800;
-		screenHeight = 600;
+		screenWidth*=0.75;
+		screenHeight*=0.75;
 
 		// Place the window in the middle of the screen.
 		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth)  / 2;
