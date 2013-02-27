@@ -23,6 +23,9 @@ bool SystemClass::Initialize()
 	int screenWidth, screenHeight;
 	bool result;
 
+	//Initialize the busy flag for key combinations
+	busy=false;
+
 	// Initialize the width and height of the screen to zero before sending the variables into the function.
 	screenWidth = 0;
 	screenHeight = 0;
@@ -127,22 +130,40 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 			main_Input->KeyDown((unsigned int)wparam);
 			
 			//Cycle Windowed/FullScreen
-			if((main_Input->IsKeyDown(VK_RETURN)) && (main_Input->IsKeyDown(VK_CONTROL))) {
+			if((busy==false) && 
+			   (main_Input->KeysDown()==2) && 
+			   (main_Input->IsKeyDown(VK_RETURN)) && 
+			   (main_Input->IsKeyDown(VK_CONTROL))) 
+			{
+				busy=true;
 				if(FULLSCREEN==false) 
 				{
-					//Implement Going to Fullscreen
+					//Fullscreen
+					posX=posY=0;
+					SetWindowLongPtr(main_hwnd, GWL_STYLE, WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_VISIBLE);
+					MoveWindow(main_hwnd, 0, 0, dmScreenSettings.dmPelsWidth, dmScreenSettings.dmPelsWidth, true);
+					ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
+					FULLSCREEN=true;
 				} else 
 				{
-					//Implement Going to Windowed Mode
+					//Windowed mode
+					int screenx = dmScreenSettings.dmPelsWidth*0.75;
+					int screeny = dmScreenSettings.dmPelsHeight*0.75;
+					posX=(GetSystemMetrics(SM_CXSCREEN) - screenx)  / 2;
+					posY=(GetSystemMetrics(SM_CXSCREEN) - screeny)  / 2;
+					SetWindowLongPtr(main_hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_VISIBLE);
+					MoveWindow(main_hwnd, posX, posY, screenx, screeny, true);
+					ChangeDisplaySettings(NULL, 0);
+					FULLSCREEN=false;
 				}
 			}
-
 			return 0;
 		}
 
 		// Check if a key has been released on the keyboard.
 		case WM_KEYUP:
 		{
+			busy=false;
 			main_Input->KeyUp((unsigned int)wparam);
 			return 0;
 		}
@@ -179,10 +200,6 @@ bool SystemClass::Frame()
 
 void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 {
-	WNDCLASSEX wc;
-	DEVMODE dmScreenSettings;
-	int posX, posY;
-
 	// Get an external pointer to this object.
 	ApplicationHandle = this;
 
@@ -213,33 +230,21 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	screenWidth  = GetSystemMetrics(SM_CXSCREEN);
 	screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-	// Fullscreen check.
-	if(FULLSCREEN)
-	{
-		// If full screen set the screen to maximum size of the users desktop and 32bit.
-		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
-		dmScreenSettings.dmSize       = sizeof(dmScreenSettings);
-		dmScreenSettings.dmPelsWidth  = (unsigned long)screenWidth;
-		dmScreenSettings.dmPelsHeight = (unsigned long)screenHeight;
-		dmScreenSettings.dmBitsPerPel = 32;
-		dmScreenSettings.dmFields     = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+	// Setup FullScreen mode for later use
+	memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
+	dmScreenSettings.dmSize       = sizeof(dmScreenSettings);
+	dmScreenSettings.dmPelsWidth  = (unsigned long)screenWidth;
+	dmScreenSettings.dmPelsHeight = (unsigned long)screenHeight;
+	dmScreenSettings.dmBitsPerPel = 32;
+	dmScreenSettings.dmFields     = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-		// Change the display settings to full screen.
-		ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
+	// Set Windowed Size;
+	screenWidth*=0.75;
+	screenHeight*=0.75;
 
-		// Set the position of the window to the top left corner.
-		posX = posY = 0;
-	}
-	else
-	{
-		// If windowed then set it to screenWidth x screenHeight resolution.
-		screenWidth*=0.75;
-		screenHeight*=0.75;
-
-		// Place the window in the middle of the screen.
-		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth)  / 2;
-		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
-	}
+	// Place the window in the middle of the screen.
+	posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth)  / 2;
+	posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
 
 	// Create the window with the screen settings and get the handle to it.
 	if(FULLSCREEN) 

@@ -17,8 +17,10 @@ public:
 	void KeyUp(unsigned int);
 
 	bool IsKeyDown(unsigned int);
+	int KeysDown();
 
 private:
+	int pressed_keys;
 	bool main_keys[256];
 };
 //End Input Class

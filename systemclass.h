@@ -31,6 +31,11 @@ private:
 	void ShutdownWindows();
 	
 private:
+	WNDCLASSEX wc;
+	DEVMODE dmScreenSettings;
+	int posX, posY;
+	bool busy;
+
 	LPCWSTR main_applicationName;
 	HINSTANCE main_hinstance;
 	HWND main_hwnd;
