@@ -20,7 +20,6 @@ SystemClass::~SystemClass()
 
 bool SystemClass::Initialize()
 {
-	int screenWidth, screenHeight;
 	bool result;
 
 	//Initialize the busy flag for key combinations
@@ -141,18 +140,18 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 					//Fullscreen
 					posX=posY=0;
 					SetWindowLongPtr(main_hwnd, GWL_STYLE, WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_VISIBLE);
-					MoveWindow(main_hwnd, 0, 0, dmScreenSettings.dmPelsWidth, dmScreenSettings.dmPelsWidth, true);
+					MoveWindow(main_hwnd, 0, 0, dmScreenSettings.dmPelsWidth, dmScreenSettings.dmPelsHeight, true);
 					ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
 					FULLSCREEN=true;
 				} else 
 				{
 					//Windowed mode
-					int screenx = dmScreenSettings.dmPelsWidth*0.75;
-					int screeny = dmScreenSettings.dmPelsHeight*0.75;
-					posX=(GetSystemMetrics(SM_CXSCREEN) - screenx)  / 2;
-					posY=(GetSystemMetrics(SM_CXSCREEN) - screeny)  / 2;
+					screenWidth = dmScreenSettings.dmPelsWidth*0.75;
+					screenHeight = dmScreenSettings.dmPelsHeight*0.75;
+					posX=(GetSystemMetrics(SM_CXSCREEN) - screenWidth)  / 2;
+					posY=(GetSystemMetrics(SM_CXSCREEN) - screenHeight)  / 2;
 					SetWindowLongPtr(main_hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_VISIBLE);
-					MoveWindow(main_hwnd, posX, posY, screenx, screeny, true);
+					MoveWindow(main_hwnd, posX, posY, screenWidth, screenHeight, true);
 					ChangeDisplaySettings(NULL, 0);
 					FULLSCREEN=false;
 				}

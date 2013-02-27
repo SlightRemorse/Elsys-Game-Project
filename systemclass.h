@@ -33,6 +33,7 @@ private:
 private:
 	WNDCLASSEX wc;
 	DEVMODE dmScreenSettings;
+	int screenWidth, screenHeight;
 	int posX, posY;
 	bool busy;
 
