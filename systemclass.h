@@ -12,6 +12,7 @@
 //System Class
 #include "inputclass.h"
 #include "graphicsclass.h"
+#include "typeconv.h"
 
 class SystemClass
 {
