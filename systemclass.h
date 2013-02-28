@@ -7,6 +7,7 @@
 
 //Includes
 #include <Windows.h>
+#include <WindowsX.h>
 
 //System Class
 #include "inputclass.h"

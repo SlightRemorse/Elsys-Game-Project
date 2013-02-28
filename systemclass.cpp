@@ -1,8 +1,6 @@
 //System Class
-#define UNICODE
-#include "WindowsX.h"
 #include "systemclass.h"
-#include <windows.h>
+
 //Constructor
 SystemClass::SystemClass() 
 {
@@ -125,13 +123,13 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 {
 	switch(umsg)
 	{
-		//getiig the position of the coursor on left click and prepare to do something after the engine is ready
+		//geting the position of the coursor on left click and prepare to do something after the engine is ready
 		case WM_LBUTTONDOWN:
-        {
-         int xPos = GET_X_LPARAM(lparam); 
-		 int yPos = GET_Y_LPARAM(lparam);
-		 return 0;
-        }
+		{
+			int xPos = GET_X_LPARAM(lparam); 
+			int yPos = GET_Y_LPARAM(lparam);
+			return 0;
+		}
 		// Check if a key has been pressed on the keyboard.
 		case WM_KEYDOWN:
 		{
