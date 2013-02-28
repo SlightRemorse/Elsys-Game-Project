@@ -123,11 +123,15 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 {
 	switch(umsg)
 	{
-		//geting the position of the coursor on left click and prepare to do something after the engine is ready
-		case WM_LBUTTONDOWN:
+		//Getting the position of the mouse on mouse movement
+		case WM_MOUSEMOVE:
 		{
-			int xPos = GET_X_LPARAM(lparam); 
-			int yPos = GET_Y_LPARAM(lparam);
+			main_Input->MouseCoord(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
+			return 0;
+		}
+		//Mouse Left Button Click
+		case WM_LBUTTONDOWN:
+		{		
 			return 0;
 		}
 		// Check if a key has been pressed on the keyboard.
