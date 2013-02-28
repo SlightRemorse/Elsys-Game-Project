@@ -15,12 +15,16 @@ public:
 
 	void KeyDown(unsigned int);
 	void KeyUp(unsigned int);
+	void MouseCoord(unsigned int, unsigned int);
 
 	bool IsKeyDown(unsigned int);
 	int KeysDown();
+	int MouseGetX();
+	int MouseGetY();
 
 private:
 	int pressed_keys;
+	int mouseX, mouseY;
 	bool main_keys[256];
 };
 //End Input Class

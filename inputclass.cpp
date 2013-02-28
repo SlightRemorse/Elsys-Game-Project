@@ -50,6 +50,13 @@ void InputClass::KeyUp(unsigned int input)
 	}
 	return;
 }
+void InputClass::MouseCoord(unsigned int x, unsigned int y)
+{
+	//Set mouse cursor coordinates within the window
+	mouseX=x;
+	mouseY=y;
+	return;
+}
 
 
 bool InputClass::IsKeyDown(unsigned int key)
@@ -62,4 +69,14 @@ int InputClass::KeysDown()
 {
 	// Return number of keys pressed
 	return pressed_keys;
+}
+
+int InputClass::MouseGetX()
+{
+	return mouseX;
+}
+
+int InputClass::MouseGetY()
+{
+	return mouseY;
 }

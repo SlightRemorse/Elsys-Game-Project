@@ -146,6 +146,8 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 				{
 					//Fullscreen
 					posX=posY=0;
+					screenWidth = dmScreenSettings.dmPelsWidth;
+					screenHeight = dmScreenSettings.dmPelsHeight;
 					SetWindowLongPtr(main_hwnd, GWL_STYLE, WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_VISIBLE);
 					MoveWindow(main_hwnd, 0, 0, dmScreenSettings.dmPelsWidth, dmScreenSettings.dmPelsHeight, true);
 					ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
