@@ -123,6 +123,34 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 {
 	switch(umsg)
 	{
+		case WM_CREATE:
+		{
+			g_hbmBall = LoadBitmap(GetModuleHandle(NULL), L"qka macka.jpg");
+			if(g_hbmBall == NULL)
+            MessageBox(hwnd, L"Could not load qka macka",L"Error", MB_OK | MB_ICONEXCLAMATION);
+			break;
+			return 0;
+		}
+		case WM_PAINT:
+    {
+        BITMAP bm;
+        PAINTSTRUCT ps;
+
+        HDC hdc = BeginPaint(hwnd, &ps);
+
+        HDC hdcMem = CreateCompatibleDC(hdc);
+        HGDIOBJ  hbmOld = SelectObject(hdcMem, g_hbmBall);
+
+        GetObject(g_hbmBall, sizeof(bm), &bm);
+
+        BitBlt(hdc, 0, 0, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
+
+        SelectObject(hdcMem, hbmOld);
+        DeleteDC(hdcMem);
+
+        EndPaint(hwnd, &ps);
+		return 0;
+    }
 		// Mouse
 
 		//Getting the position of the mouse on mouse movement

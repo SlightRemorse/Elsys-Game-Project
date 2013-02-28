@@ -4,6 +4,7 @@
 
 //Macros
 #define WIN32_LEAN_AND_MEAN
+#define MAKEINTRESOURCE
 
 //Includes
 #include <Windows.h>
@@ -35,6 +36,7 @@ private:
 private:
 	WNDCLASSEX wc;
 	DEVMODE dmScreenSettings;
+	HBITMAP g_hbmBall ;
 	int screenWidth, screenHeight;
 	int posX, posY;
 	bool busy;
