@@ -19,11 +19,16 @@ InputClass::~InputClass()
 
 void InputClass::Initialize()
 {
-	// Initialize all the keys to being released and not pressed.
+	// Initialize all keyboard keys.
 	for(int i=0; i<256; i++)
 	{
 		pressed_keys=0;
 		main_keys[i] = false;
+	}
+	// Initialize Mouse keys.
+	for(int i=0; i<50; i++)
+	{
+		mouse_keys[i] = false;
 	}
 
 	return;
@@ -50,7 +55,23 @@ void InputClass::KeyUp(unsigned int input)
 	}
 	return;
 }
-void InputClass::MouseCoord(unsigned int x, unsigned int y)
+
+void InputClass::MKeyDown(unsigned int input)
+{
+	//Mouse Click
+	mouse_keys[input] = true;
+	return;
+}
+
+void InputClass::MKeyUp(unsigned int input)
+{
+	//Mouse Release
+	mouse_keys[input] = false;
+	return;
+}
+
+
+void InputClass::MCoord(unsigned int x, unsigned int y)
 {
 	//Set mouse cursor coordinates within the window
 	mouseX=x;
@@ -65,18 +86,23 @@ bool InputClass::IsKeyDown(unsigned int key)
 	return main_keys[key];
 }
 
+bool InputClass::IsMKeyDown(unsigned int key)
+{
+	return mouse_keys[key];
+}
+
 int InputClass::KeysDown() 
 {
 	// Return number of keys pressed
 	return pressed_keys;
 }
 
-int InputClass::MouseGetX()
+int InputClass::MGetX()
 {
 	return mouseX;
 }
 
-int InputClass::MouseGetY()
+int InputClass::MGetY()
 {
 	return mouseY;
 }

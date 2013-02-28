@@ -123,22 +123,47 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 {
 	switch(umsg)
 	{
+		// Mouse
+
 		//Getting the position of the mouse on mouse movement
 		case WM_MOUSEMOVE:
 		{
-			main_Input->MouseCoord(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
+			main_Input->MCoord(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
 			return 0;
 		}
 		//Mouse Left Button Click
 		case WM_LBUTTONDOWN:
-		{		
+		{	
+			main_Input->MKeyDown(wparam);
 			return 0;
 		}
+
+		case WM_LBUTTONUP:
+		{	
+			main_Input->MKeyUp(wparam);
+			return 0;
+		}
+
+		//Mouse Right Button Click
+		case WM_RBUTTONDOWN:
+		{
+			main_Input->MKeyDown(wparam);
+			return 0;
+		}
+
+		case WM_RBUTTONUP:
+		{
+			main_Input->MKeyDown(wparam);
+			return 0;
+		}
+		//End Mouse
+
+		//Keyboard
 		// Check if a key has been pressed on the keyboard.
 		case WM_KEYDOWN:
 		{
 			main_Input->KeyDown((unsigned int)wparam);
-			
+
 			//Cycle Windowed/FullScreen
 			if((busy==false) && 
 			   (main_Input->KeysDown()==2) && 
@@ -175,6 +200,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 			}
 			return 0;
 		}
+		//End Keyboard
 
 		// Check if a key has been released on the keyboard.
 		case WM_KEYUP:
@@ -203,6 +229,7 @@ bool SystemClass::Frame()
 		return false;
 	}
 	// End User input
+	
 
 	// Do the frame processing for the graphics object.
 	result = main_Graphics->Frame();
