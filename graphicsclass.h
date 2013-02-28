@@ -5,6 +5,9 @@
 
 //Includes
 #include <windows.h>
+#include <d3d9.h>
+
+#pragma comment (lib, "d3d9.lib")
 
 //Graphics Class
 class GraphicsClass
@@ -17,12 +20,15 @@ public:
 	bool Initialize(int, int, HWND);
 	void Shutdown();
 	bool Frame();
+	bool ResetDevice(bool, int, int);
 
 private:
 	bool Render();
+	bool ToggleFullscreen(bool, int, int);
 
-private:
-
+	IDirect3D9* graph_DX9;
+	IDirect3DDevice9* DX9_device;
+	D3DPRESENT_PARAMETERS DX9pp;
 };
 //End Graphics Class
 

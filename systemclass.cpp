@@ -61,7 +61,7 @@ bool SystemClass::Initialize()
 
 void SystemClass::Shutdown()
 {
-	// Clean the graphics object.
+	// Clear the graphics object.
 	if(main_Graphics)
 	{
 		main_Graphics->Shutdown();
@@ -69,7 +69,7 @@ void SystemClass::Shutdown()
 		main_Graphics = 0;
 	}
 
-	// Clean the input object.
+	// Clear the input object.
 	if(main_Input)
 	{
 		delete main_Input;
@@ -151,17 +151,21 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 					SetWindowLongPtr(main_hwnd, GWL_STYLE, WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_VISIBLE);
 					MoveWindow(main_hwnd, 0, 0, dmScreenSettings.dmPelsWidth, dmScreenSettings.dmPelsHeight, true);
 					ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
+					main_Graphics->ResetDevice(true, dmScreenSettings.dmPelsWidth, dmScreenSettings.dmPelsHeight);
+					
 					FULLSCREEN=true;
 				} else 
 				{
 					//Windowed mode
-					screenWidth = dmScreenSettings.dmPelsWidth*0.75;
-					screenHeight = dmScreenSettings.dmPelsHeight*0.75;
+					screenWidth = GetSystemMetrics(SM_CXSCREEN)*0.75;
+					screenHeight = GetSystemMetrics(SM_CYSCREEN)*0.75;
 					posX=(GetSystemMetrics(SM_CXSCREEN) - screenWidth)  / 2;
 					posY=(GetSystemMetrics(SM_CXSCREEN) - screenHeight)  / 2;
 					SetWindowLongPtr(main_hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_VISIBLE);
 					MoveWindow(main_hwnd, posX, posY, screenWidth, screenHeight, true);
 					ChangeDisplaySettings(NULL, 0);
+					main_Graphics->ResetDevice(false, screenWidth, screenHeight);
+
 					FULLSCREEN=false;
 				}
 			}
@@ -238,7 +242,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	screenWidth  = GetSystemMetrics(SM_CXSCREEN);
 	screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-	// Setup FullScreen mode for later use
+	// Setup FullScreen mode struct for later use
 	memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
 	dmScreenSettings.dmSize       = sizeof(dmScreenSettings);
 	dmScreenSettings.dmPelsWidth  = (unsigned long)screenWidth;

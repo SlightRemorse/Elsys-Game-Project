@@ -18,7 +18,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 		System->Run();
 	}
 
-	// Shutdown and clean the system object.
+	// Shutdown and clear the system object.
 	System->Shutdown();
 	delete System; // Not System32
 	System = 0;
