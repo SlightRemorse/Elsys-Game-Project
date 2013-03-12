@@ -5,8 +5,10 @@
 
 //Includes
 #include <d3d9.h>
+#include <d3dx9.h>
 
 #pragma comment (lib, "d3d9.lib")
+#pragma comment (lib, "d3dx9.lib")
 
 //Graphics Class
 class GraphicsClass
@@ -25,8 +27,8 @@ private:
 	bool Render();
 	bool ToggleFullscreen(bool, int, int);
 
-	IDirect3D9* graph_DX9;
-	IDirect3DDevice9* DX9_device;
+	IDirect3D9* pGraph_DX9;
+	IDirect3DDevice9* pDX9_device;
 	D3DPRESENT_PARAMETERS DX9pp;
 };
 //End Graphics Class

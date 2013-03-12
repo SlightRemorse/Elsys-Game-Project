@@ -229,7 +229,6 @@ bool SystemClass::Frame()
 		return false;
 	}
 	// End User input
-	
 
 	// Do the frame processing for the graphics object.
 	result = main_Graphics->Frame();
@@ -244,7 +243,7 @@ bool SystemClass::Frame()
 void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 {
 	// Get an external pointer to this object.
-	ApplicationHandle = this;
+	pApplicationHandle = this;
 
 	// Get the instance of this application.
 	main_hinstance = GetModuleHandle(NULL);
@@ -330,7 +329,7 @@ void SystemClass::ShutdownWindows()
 	main_hinstance = NULL;
 
 	// Release the pointer to this class.
-	ApplicationHandle = NULL;
+	pApplicationHandle = NULL;
 
 	return;
 }
@@ -356,7 +355,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 		// Default: Pass to System Class
 		default:
 		{
-			return ApplicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);
+			return pApplicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);
 		}
 	}
 }

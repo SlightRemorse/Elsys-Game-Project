@@ -4,8 +4,8 @@
 //Constructor
 GraphicsClass::GraphicsClass()
 {
-	graph_DX9=0;
-	DX9_device=0;
+	pGraph_DX9=0;
+	pDX9_device=0;
 }
 
 //Copy Constructor
@@ -18,14 +18,13 @@ GraphicsClass::~GraphicsClass()
 {
 }
 
-
 bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
 	HRESULT hresult;
 
 	//Create DirectX9 object
-	graph_DX9 = Direct3DCreate9(D3D_SDK_VERSION);
-	if(graph_DX9==0) return false;
+	pGraph_DX9 = Direct3DCreate9(D3D_SDK_VERSION);
+	if(pGraph_DX9==0) return false;
 
 	//Setup DX 3D Present Parameters struct
 	memset(&DX9pp, 0, sizeof(DX9pp));
@@ -43,12 +42,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 
 	//Create the device
-	hresult = graph_DX9->CreateDevice(	D3DADAPTER_DEFAULT, // Default monitor
+	hresult = pGraph_DX9->CreateDevice(	D3DADAPTER_DEFAULT, // Default monitor
 										D3DDEVTYPE_HAL, // Use Hardware acceleration
 										hwnd, // Our Window
 										D3DCREATE_SOFTWARE_VERTEXPROCESSING, //Process vertices in software. (Slower, but works on all graphic cards)
 										&DX9pp, // Present Parameters struct
-										&DX9_device); // Pointer to the device we just created
+										&pDX9_device); // Pointer to the device we just created
 	
 	if(FAILED(hresult))
 	{ 
@@ -65,13 +64,13 @@ bool GraphicsClass::Frame()
 	bool successful;
 	HRESULT hresult;
 
-	hresult=DX9_device->TestCooperativeLevel();
+	hresult=pDX9_device->TestCooperativeLevel();
 
 	if(SUCCEEDED(hresult)) 
 	{
 		//Device cooperative (working)
 		//Clearing the buffer
-		hresult = DX9_device->Clear(0,  //Number of rectangles to clear, we're clearing everything so set it to 0
+		hresult = pDX9_device->Clear(0,  //Number of rectangles to clear, we're clearing everything so set it to 0
 								NULL, //Pointer to the rectangles to clear, NULL to clear whole display
 								D3DCLEAR_TARGET,   //What to clear.  We don't have a Z Buffer or Stencil Buffer
 								0x00000000, //Colour to clear to (AA RR GG BB)
@@ -84,12 +83,12 @@ bool GraphicsClass::Frame()
 		}
 
 		//Rendering the new buffer
-		DX9_device->BeginScene();
+		pDX9_device->BeginScene();
 		successful=Render();
-		DX9_device->EndScene();
+		pDX9_device->EndScene();
 	
 		//Displaying
-		if(successful) DX9_device->Present(NULL, //Source rectangle to display, NULL for all of it
+		if(successful) pDX9_device->Present(NULL, //Source rectangle to display, NULL for all of it
 										NULL, //Destination rectangle, NULL to fill whole display
 										NULL, //Target window, if NULL uses device window set in CreateDevice
 										NULL); //Dirty Region, set it to NULL
@@ -102,7 +101,7 @@ bool GraphicsClass::Frame()
 	else if(hresult==D3DERR_DEVICENOTRESET)
 	{
 		//Device Lost, but able to be reset
-		hresult=DX9_device->Reset(&DX9pp);
+		hresult=pDX9_device->Reset(&DX9pp);
 
 		if(SUCCEEDED(hresult)) 
 		{
@@ -126,12 +125,12 @@ bool GraphicsClass::Render()
 void GraphicsClass::Shutdown()
 {
 	//Clear the DX9 device object.
-	if(DX9_device) DX9_device->Release();
-	DX9_device=0;
+	if(pDX9_device) pDX9_device->Release();
+	pDX9_device=0;
 
 	//Clear the DX9 object.
-	if(graph_DX9) graph_DX9->Release();
-	graph_DX9=0;
+	if(pGraph_DX9) pGraph_DX9->Release();
+	pGraph_DX9=0;
 	return;
 }
 
@@ -161,7 +160,7 @@ bool GraphicsClass::ResetDevice(bool fullscr, int screenWidth, int screenHeight)
 	ToggleFullscreen(fullscr, screenWidth, screenHeight);
 
 	// Reset device and check for errors.
-	hresult=DX9_device->Reset(&DX9pp);
+	hresult=pDX9_device->Reset(&DX9pp);
 	if(FAILED(hresult)) 
 	{
 		return false;

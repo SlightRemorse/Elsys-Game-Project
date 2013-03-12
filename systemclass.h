@@ -32,7 +32,6 @@ private:
 	void InitializeWindows(int&, int&);
 	void ShutdownWindows();
 	
-private:
 	WNDCLASSEX wc;
 	DEVMODE dmScreenSettings;
 	int screenWidth, screenHeight;
@@ -52,6 +51,6 @@ private:
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 //Global
-static SystemClass* ApplicationHandle = 0;
+static SystemClass* pApplicationHandle = 0;
 
 #endif
