@@ -1,6 +1,7 @@
 //System Class
 #include "systemclass.h"
 
+
 //Constructor
 SystemClass::SystemClass() 
 {
@@ -134,13 +135,15 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		//Mouse Left Button Click
 		case WM_LBUTTONDOWN:
 		{	
+			//MessageBox(main_hwnd, IntToWSTR(wparam), L"Mouse Click", MB_OK);
 			main_Input->MKeyDown(wparam);
 			return 0;
 		}
-
+		//Fix Release Keys
 		case WM_LBUTTONUP:
 		{	
-			main_Input->MKeyUp(wparam);
+			//MessageBox(main_hwnd, IntToWSTR(wparam), L"Mouse Release", MB_OK);
+			main_Input->MKeyUp(1);
 			return 0;
 		}
 
@@ -222,13 +225,78 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 bool SystemClass::Frame()
 {
 	bool result;
+	bool sleepy=false;
 
 	// User input
+
 	if(main_Input->IsKeyDown(VK_ESCAPE))
 	{
 		return false;
 	}
-	// End User input
+	
+	//Blue
+	if(main_Input->IsKeyDown(69))
+	{
+		if(main_Graphics->BGCOLOR%0x100<0xF0) 
+		{
+			main_Graphics->BGCOLOR+=0x10;
+			sleepy=true;
+		}
+	}
+	if(main_Input->IsKeyDown(68))
+	{
+		if(main_Graphics->BGCOLOR%0x100>=0x10) 
+		{
+			main_Graphics->BGCOLOR-=0x10;
+			sleepy=true;
+		}
+	}
+
+	//Green
+	if(main_Input->IsKeyDown(87))
+	{
+		if(main_Graphics->BGCOLOR%0x10000<0xF000) 
+		{
+			main_Graphics->BGCOLOR+=0x1000;
+			sleepy=true;
+		}
+	}
+	if(main_Input->IsKeyDown(83))
+	{
+		if(main_Graphics->BGCOLOR%0x10000>0x1000) 
+		{
+			main_Graphics->BGCOLOR-=0x1000;
+			sleepy=true;
+		}
+	}
+
+	//Red
+	if(main_Input->IsKeyDown(81))
+	{
+		if(main_Graphics->BGCOLOR%0x1000000<0xF00000) 
+		{
+			main_Graphics->BGCOLOR+=0x100000;
+			sleepy=true;
+		}
+	}
+	if(main_Input->IsKeyDown(65))
+	{
+		if(main_Graphics->BGCOLOR%0x1000000>0x100000) 
+		{
+			main_Graphics->BGCOLOR-=0x100000;
+			sleepy=true;
+		}
+	}
+
+	if(main_Input->IsMKeyDown(1)){
+		main_Graphics->BGCOLOR = main_Input->MGetX() + main_Input->MGetY()*0xFFF;
+		sleepy=true;
+	}
+		// End User input
+
+	//Implement Making Steaks for Happy Stanev
+	
+	if(sleepy) Sleep(100); // sleep function
 
 	// Do the frame processing for the graphics object.
 	result = main_Graphics->Frame();

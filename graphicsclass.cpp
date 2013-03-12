@@ -40,6 +40,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	
 	ToggleFullscreen(FULLSCREEN, screenWidth, screenHeight);
 
+	//Initialize Background Color to Black
+	BGCOLOR=0x00000000;
 
 	//Create the device
 	hresult = pGraph_DX9->CreateDevice(	D3DADAPTER_DEFAULT, // Default monitor
@@ -63,7 +65,6 @@ bool GraphicsClass::Frame()
 {
 	bool successful;
 	HRESULT hresult;
-
 	hresult=pDX9_device->TestCooperativeLevel();
 
 	if(SUCCEEDED(hresult)) 
@@ -73,7 +74,7 @@ bool GraphicsClass::Frame()
 		hresult = pDX9_device->Clear(0,  //Number of rectangles to clear, we're clearing everything so set it to 0
 								NULL, //Pointer to the rectangles to clear, NULL to clear whole display
 								D3DCLEAR_TARGET,   //What to clear.  We don't have a Z Buffer or Stencil Buffer
-								0x00000000, //Colour to clear to (AA RR GG BB)
+								BGCOLOR, //Colour to clear to (AA RR GG BB)
 								1.0f,  //Value to clear ZBuffer to, doesn't matter since we don't have one
 								0);   //Stencil clear value, again, we don't have one, this value doesn't matter
 		if(FAILED(hresult))

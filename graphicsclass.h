@@ -22,6 +22,7 @@ public:
 	void Shutdown();
 	bool Frame();
 	bool ResetDevice(bool, int, int);
+	int BGCOLOR;
 
 private:
 	bool Render();
