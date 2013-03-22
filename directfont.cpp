@@ -4,7 +4,7 @@
 //Constructor (Get the D3DX device we'll be working with)
 DXFonts::DXFonts(IDirect3DDevice9* device) 
 {
-	getDevice(device);
+	pDevice=device;
 }
 
 //Copy Constructor
@@ -15,11 +15,6 @@ DXFonts::DXFonts(const DXFonts&)
 //Deconstructor
 DXFonts::~DXFonts()
 {
-}
-
-void DXFonts::getDevice(IDirect3DDevice9* device)
-{
-	pDevice=device;
 }
 
 bool DXFonts::SetFont(LPCWSTR fontname, int height, int width, unsigned int thickness, 

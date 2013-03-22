@@ -109,7 +109,9 @@ bool GraphicsClass::Frame()
 	{
 		//Device Lost, but able to be reset
 		hresult=pDX9_device->Reset(&DX9pp);
-		pDX_Fonts->getDevice(pDX9_device);
+
+		pDX_Fonts = new DXFonts(pDX9_device);
+		pDX_Fonts->SetFont(L"Arial", 20); //Loading Default 20px Arial font
 		
 		if(SUCCEEDED(hresult)) 
 		{
@@ -189,7 +191,10 @@ bool GraphicsClass::ResetDevice(bool fullscr, int screenWidth, int screenHeight)
 
 	// Reset device and check for errors.
 	hresult=pDX9_device->Reset(&DX9pp);
-	pDX_Fonts->getDevice(pDX9_device);
+
+	pDX_Fonts = new DXFonts(pDX9_device);
+	pDX_Fonts->SetFont(L"Arial", 20); //Loading Default 20px Arial font
+
 	if(FAILED(hresult)) 
 	{
 		return false;

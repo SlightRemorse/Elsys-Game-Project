@@ -26,4 +26,12 @@ FontWrapper::~FontWrapper()
 	delete pRect; // temporary here
 }
 
+void FontWrapper::MoveRectBy(int x, int y)
+{
+	pRect->left+=x;
+	pRect->right+=x;
+	pRect->top+=y;
+	pRect->bottom+=y;
+}
+
 //End Font Wrapper

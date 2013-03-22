@@ -229,6 +229,9 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 	}
 }
 
+//Test Variables
+GraphicWrapper* test=0;
+
 // Code Loop
 bool SystemClass::Frame()
 {
@@ -242,6 +245,23 @@ bool SystemClass::Frame()
 		return false;
 	}
 	
+	if(main_Input->IsKeyDown(VK_LEFT))
+	{
+		if(test) ((FontWrapper*)test)->MoveRectBy(-2,0);
+	}
+	if(main_Input->IsKeyDown(VK_RIGHT))
+	{
+		if(test) ((FontWrapper*)test)->MoveRectBy(2,0);
+	}
+	if(main_Input->IsKeyDown(VK_UP))
+	{
+		if(test) ((FontWrapper*)test)->MoveRectBy(0,-2);
+	}
+	if(main_Input->IsKeyDown(VK_DOWN))
+	{
+		if(test) ((FontWrapper*)test)->MoveRectBy(0,2);
+	}
+
 	//Blue
 	if(main_Input->IsKeyDown(69))
 	{
@@ -300,12 +320,18 @@ bool SystemClass::Frame()
 		main_Graphics->BGCOLOR = main_Input->MGetX() + main_Input->MGetY()*0xFFF;
 		sleepy=true;
 	}
-	//Causes Terrible, Terrible crash if you try to change to Fullscreen
+	//Awesome, isn't it?))))
 	if(main_Input->IsMKeyDown(2)){
-		main_Graphics->AddObject(new FontWrapper(main_Input->MGetX(), main_Input->MGetY(), 
+		if(test==0)	test=main_Graphics->AddObject(new FontWrapper(main_Input->MGetX(), main_Input->MGetY(), 
 												main_Input->MGetX()+200, main_Input->MGetY()+200,
-												L"*Click*"));
-		sleepy=true;
+												L"X"));
+		else
+		{
+			main_Graphics->RemoveObject(test);
+			test=main_Graphics->AddObject(new FontWrapper(main_Input->MGetX(), main_Input->MGetY(), 
+												main_Input->MGetX()+200, main_Input->MGetY()+200,
+												L"X"));
+		}
 	}
 		// End User input
 

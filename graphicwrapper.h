@@ -29,6 +29,8 @@ public:
 	FontWrapper(const FontWrapper&);
 	~FontWrapper();
 
+	void MoveRectBy(int, int);
+
 	RECT* pRect;
 	LPCWSTR text_str;
 };

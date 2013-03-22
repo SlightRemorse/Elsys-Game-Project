@@ -15,7 +15,6 @@ public:
 	DXFonts(const DXFonts&);
 	~DXFonts();
 	
-	void getDevice(IDirect3DDevice9*);
 	bool Initialize();
 	void Shutdown();
 
