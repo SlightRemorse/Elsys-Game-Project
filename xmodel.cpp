@@ -4,9 +4,9 @@
 #include "AllocateHierarchy.h"
 
 //Constructor (Get the D3DX device we'll be working with)
-XModel::XModel(IDirect3DDevice9* main_device) 
+XModel::XModel(IDirect3DDevice9* device) 
 {
-	device=main_device;
+	pDevice=device;
 }
 
 //Copy Constructor
@@ -26,13 +26,19 @@ bool XModel::LoadModel(LPCWSTR filename)
 	AllocateHierarchy HAlloc;
 
 	hresult=D3DXLoadMeshHierarchyFromX(filename, D3DXMESH_MANAGED,
-										device, &HAlloc, 0,
+										pDevice, &HAlloc, 0,
 										&pFrameRoot, &pAnimController);
 	if(FAILED(hresult)) // couldn't load.
 	{
 		return false;
 	}
-	// Implement rest
+
+	if(pAnimController) //Getting all the animation sets.
+	{
+		pAnimController->GetMaxNumAnimationSets();
+	}
+
+
 
 	return true;
 }

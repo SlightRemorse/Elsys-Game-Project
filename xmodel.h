@@ -18,13 +18,13 @@ public:
 
 	bool LoadModel(LPCWSTR);
 private:
-	IDirect3DDevice9* device;
+	IDirect3DDevice9* pDevice;
 	D3DXFRAME* pFrameRoot;
 	ID3DXAnimationController* pAnimController;
 };
 
 //End .x Model Class
 
-//Global
+//Globals
 
 #endif

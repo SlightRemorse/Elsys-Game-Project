@@ -57,6 +57,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	//Any side features adding
+	
+	//Fonts
+	pDX_Fonts = new DXFonts(pDX9_device);
+	pDX_Fonts->SetFont(L"Arial", 20); //Loading Default 20px Arial font
+	
 	return true;
 }
 
@@ -103,7 +109,8 @@ bool GraphicsClass::Frame()
 	{
 		//Device Lost, but able to be reset
 		hresult=pDX9_device->Reset(&DX9pp);
-
+		pDX_Fonts->getDevice(pDX9_device);
+		
 		if(SUCCEEDED(hresult)) 
 		{
 			return true;
@@ -120,11 +127,31 @@ bool GraphicsClass::Frame()
 
 bool GraphicsClass::Render()
 {
+	for(int i=0; i<vec_pGObj.size(); i++)
+	{
+		if(vec_pGObj[i]->classtype==FONT)
+		{
+			pDX_Fonts->pD3DX_font->DrawText(NULL,
+											((FontWrapper*)vec_pGObj[i])->text_str,
+											-1,
+											((FontWrapper*)vec_pGObj[i])->pRect,
+											DT_LEFT|DT_NOCLIP,
+											0xFFFFFFFF);							
+		}
+	}
+
 	return true;
 }
 
 void GraphicsClass::Shutdown()
 {
+	//Any side features cleaning
+	
+	//Fonts
+	pDX_Fonts->Shutdown();
+	delete pDX_Fonts;
+	pDX_Fonts=0;
+
 	//Clear the DX9 device object.
 	if(pDX9_device) pDX9_device->Release();
 	pDX9_device=0;
@@ -162,6 +189,7 @@ bool GraphicsClass::ResetDevice(bool fullscr, int screenWidth, int screenHeight)
 
 	// Reset device and check for errors.
 	hresult=pDX9_device->Reset(&DX9pp);
+	pDX_Fonts->getDevice(pDX9_device);
 	if(FAILED(hresult)) 
 	{
 		return false;
@@ -169,4 +197,25 @@ bool GraphicsClass::ResetDevice(bool fullscr, int screenWidth, int screenHeight)
 	{
 		return true;
 	}
+}
+
+//Adding Graphic Objects
+GraphicWrapper* GraphicsClass::AddObject(GraphicWrapper* pWrapper)
+{
+	vec_pGObj.push_back(pWrapper);
+	return pWrapper;
+}
+
+//Removing Graphic Objects
+bool GraphicsClass::RemoveObject(GraphicWrapper* pWrapper)
+{
+	for(int i=0; i<vec_pGObj.size(); i++)
+	{
+		if(vec_pGObj[i]==pWrapper)
+		{
+			vec_pGObj.erase(vec_pGObj.begin()+i);
+			return true; // Object found and eraced
+		}
+	}
+	return false; // Object not found :(
 }

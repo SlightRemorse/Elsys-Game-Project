@@ -6,11 +6,15 @@
 //Includes
 #include <d3d9.h>
 #include <d3dx9.h>
+#include <vector>
 
 #pragma comment (lib, "d3d9.lib")
 #pragma comment (lib, "d3dx9.lib")
 
 //Graphics Class
+#include "graphicwrapper.h"
+#include "directfont.h"
+
 class GraphicsClass
 {
 public:
@@ -22,7 +26,15 @@ public:
 	void Shutdown();
 	bool Frame();
 	bool ResetDevice(bool, int, int);
-	int BGCOLOR;
+
+	D3DCOLOR BGCOLOR;
+	DXFonts* pDX_Fonts;
+
+	std::vector<GraphicWrapper*> vec_pGObj;
+	GraphicWrapper* AddObject(GraphicWrapper*);
+	bool RemoveObject(GraphicWrapper*);
+
+
 
 private:
 	bool Render();

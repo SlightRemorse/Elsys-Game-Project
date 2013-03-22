@@ -120,6 +120,10 @@ void SystemClass::Run()
 	return;
 }
 
+//Test Variables
+GraphicWrapper* X;
+GraphicWrapper* Y;
+
 LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
 	switch(umsg)
@@ -130,6 +134,10 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		case WM_MOUSEMOVE:
 		{
 			main_Input->MCoord(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
+			main_Graphics->RemoveObject(X);
+			main_Graphics->RemoveObject(Y);
+			X=main_Graphics->AddObject(new FontWrapper(0, 0, 50, 50, IntToWSTR(main_Input->MGetX())));
+			Y=main_Graphics->AddObject(new FontWrapper(50, 0, 100, 100, IntToWSTR(main_Input->MGetY())));
 			return 0;
 		}
 		//Mouse Left Button Click
@@ -156,7 +164,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 
 		case WM_RBUTTONUP:
 		{
-			main_Input->MKeyDown(wparam);
+			main_Input->MKeyUp(2);
 			return 0;
 		}
 		//End Mouse
@@ -290,6 +298,13 @@ bool SystemClass::Frame()
 
 	if(main_Input->IsMKeyDown(1)){
 		main_Graphics->BGCOLOR = main_Input->MGetX() + main_Input->MGetY()*0xFFF;
+		sleepy=true;
+	}
+	//Causes Terrible, Terrible crash if you try to change to Fullscreen
+	if(main_Input->IsMKeyDown(2)){
+		main_Graphics->AddObject(new FontWrapper(main_Input->MGetX(), main_Input->MGetY(), 
+												main_Input->MGetX()+200, main_Input->MGetY()+200,
+												L"*Click*"));
 		sleepy=true;
 	}
 		// End User input
