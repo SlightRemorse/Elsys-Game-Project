@@ -7,6 +7,7 @@
 
 //Functions
 LPCWSTR IntToWSTR(int);
+LPCWSTR JoinWSTR(LPCWSTR, LPCWSTR);
 
 
 #endif

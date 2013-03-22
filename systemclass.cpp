@@ -121,8 +121,7 @@ void SystemClass::Run()
 }
 
 //Test Variables
-GraphicWrapper* X;
-GraphicWrapper* Y;
+GraphicWrapper* MousePos;
 
 LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
@@ -134,10 +133,11 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		case WM_MOUSEMOVE:
 		{
 			main_Input->MCoord(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
-			main_Graphics->RemoveObject(X);
-			main_Graphics->RemoveObject(Y);
-			X=main_Graphics->AddObject(new FontWrapper(0, 0, 50, 50, IntToWSTR(main_Input->MGetX())));
-			Y=main_Graphics->AddObject(new FontWrapper(50, 0, 100, 100, IntToWSTR(main_Input->MGetY())));
+			main_Graphics->RemoveObject(MousePos);
+			MousePos=main_Graphics->AddObject(new FontWrapper(0, 0, 50, 50, 
+				JoinWSTR(L"Mouse Pos:", 
+						JoinWSTR(IntToWSTR(main_Input->MGetX()), IntToWSTR(main_Input->MGetY()))
+						)));
 			return 0;
 		}
 		//Mouse Left Button Click
@@ -231,12 +231,21 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 
 //Test Variables
 GraphicWrapper* test=0;
+GraphicWrapper* keys;
 
 // Code Loop
 bool SystemClass::Frame()
 {
 	bool result;
-	bool sleepy=false;
+
+	
+	main_Graphics->RemoveObject(keys);
+	LPCWSTR string = L"Keys pressed:";
+	for(int i=0; i<256; i++)
+	{
+		if(main_Input->IsKeyDown(i)) string=JoinWSTR(string, IntToWSTR(i));
+	}
+	keys=main_Graphics->AddObject(new FontWrapper(0,20,50,70, string));
 
 	// User input
 
@@ -268,7 +277,6 @@ bool SystemClass::Frame()
 		if(main_Graphics->BGCOLOR%0x100<0xF0) 
 		{
 			main_Graphics->BGCOLOR+=0x10;
-			sleepy=true;
 		}
 	}
 	if(main_Input->IsKeyDown(68))
@@ -276,7 +284,6 @@ bool SystemClass::Frame()
 		if(main_Graphics->BGCOLOR%0x100>=0x10) 
 		{
 			main_Graphics->BGCOLOR-=0x10;
-			sleepy=true;
 		}
 	}
 
@@ -286,7 +293,6 @@ bool SystemClass::Frame()
 		if(main_Graphics->BGCOLOR%0x10000<0xF000) 
 		{
 			main_Graphics->BGCOLOR+=0x1000;
-			sleepy=true;
 		}
 	}
 	if(main_Input->IsKeyDown(83))
@@ -294,7 +300,6 @@ bool SystemClass::Frame()
 		if(main_Graphics->BGCOLOR%0x10000>0x1000) 
 		{
 			main_Graphics->BGCOLOR-=0x1000;
-			sleepy=true;
 		}
 	}
 
@@ -304,7 +309,6 @@ bool SystemClass::Frame()
 		if(main_Graphics->BGCOLOR%0x1000000<0xF00000) 
 		{
 			main_Graphics->BGCOLOR+=0x100000;
-			sleepy=true;
 		}
 	}
 	if(main_Input->IsKeyDown(65))
@@ -312,13 +316,11 @@ bool SystemClass::Frame()
 		if(main_Graphics->BGCOLOR%0x1000000>0x100000) 
 		{
 			main_Graphics->BGCOLOR-=0x100000;
-			sleepy=true;
 		}
 	}
 
 	if(main_Input->IsMKeyDown(1)){
 		main_Graphics->BGCOLOR = main_Input->MGetX() + main_Input->MGetY()*0xFFF;
-		sleepy=true;
 	}
 	//Awesome, isn't it?))))
 	if(main_Input->IsMKeyDown(2)){
@@ -336,8 +338,6 @@ bool SystemClass::Frame()
 		// End User input
 
 	//Implement Making Steaks for Happy Stanev
-	
-	if(sleepy) Sleep(100); // sleep function
 
 	// Do the frame processing for the graphics object.
 	result = main_Graphics->Frame();
