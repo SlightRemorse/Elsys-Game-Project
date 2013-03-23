@@ -19,6 +19,8 @@ class GraphicWrapper
 {
 public:
 	GraphType classtype;
+
+	virtual void CleanUp()=0;
 };
 //End Graphic Object Class
 
@@ -29,6 +31,7 @@ public:
 	FontWrapper(const FontWrapper&);
 	~FontWrapper();
 
+	void CleanUp();
 	void MoveRectBy(int, int);
 
 	RECT* pRect;

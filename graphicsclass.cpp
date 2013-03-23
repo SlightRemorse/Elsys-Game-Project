@@ -219,6 +219,8 @@ bool GraphicsClass::RemoveObject(GraphicWrapper* pWrapper)
 		if(vec_pGObj[i]==pWrapper)
 		{
 			vec_pGObj.erase(vec_pGObj.begin()+i);
+			pWrapper->CleanUp();
+			delete pWrapper;
 			return true; // Object found and eraced
 		}
 	}

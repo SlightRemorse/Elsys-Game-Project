@@ -14,6 +14,8 @@
 #include "graphicsclass.h"
 #include "typeconv.h"
 
+#include "teststage.h"
+
 class SystemClass
 {
 public:
@@ -44,6 +46,8 @@ private:
 
 	InputClass* main_Input;
 	GraphicsClass* main_Graphics;
+
+	TestStage* stage1;
 };
 // End System Class
 

@@ -23,7 +23,11 @@ FontWrapper::FontWrapper(const FontWrapper&)
 //Deconstructor
 FontWrapper::~FontWrapper()
 {
-	delete pRect; // temporary here
+}
+
+void FontWrapper::CleanUp()
+{
+	delete pRect; // Freeing Memory
 }
 
 void FontWrapper::MoveRectBy(int x, int y)

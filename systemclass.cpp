@@ -54,6 +54,8 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
+	stage1 = new TestStage(main_Graphics, main_Input); //Initializing the test stage
+
 	return true;
 }
 
@@ -229,124 +231,23 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 	}
 }
 
-//Test Variables
-GraphicWrapper* test=0;
-GraphicWrapper* keys;
-
 // Code Loop
 bool SystemClass::Frame()
 {
-	bool result;
 
+	stage1->Run();
 	
-	main_Graphics->RemoveObject(keys);
-	LPCWSTR string = L"Keys pressed:";
-	for(int i=0; i<256; i++)
-	{
-		if(main_Input->IsKeyDown(i)) string=JoinWSTR(string, IntToWSTR(i));
-	}
-	keys=main_Graphics->AddObject(new FontWrapper(0,20,50,70, string));
-
-	// User input
-
 	if(main_Input->IsKeyDown(VK_ESCAPE))
 	{
 		return false;
 	}
-	
-	if(main_Input->IsKeyDown(VK_LEFT))
-	{
-		if(test) ((FontWrapper*)test)->MoveRectBy(-2,0);
-	}
-	if(main_Input->IsKeyDown(VK_RIGHT))
-	{
-		if(test) ((FontWrapper*)test)->MoveRectBy(2,0);
-	}
-	if(main_Input->IsKeyDown(VK_UP))
-	{
-		if(test) ((FontWrapper*)test)->MoveRectBy(0,-2);
-	}
-	if(main_Input->IsKeyDown(VK_DOWN))
-	{
-		if(test) ((FontWrapper*)test)->MoveRectBy(0,2);
-	}
-
-	//Blue
-	if(main_Input->IsKeyDown(69))
-	{
-		if(main_Graphics->BGCOLOR%0x100<0xF0) 
-		{
-			main_Graphics->BGCOLOR+=0x10;
-		}
-	}
-	if(main_Input->IsKeyDown(68))
-	{
-		if(main_Graphics->BGCOLOR%0x100>=0x10) 
-		{
-			main_Graphics->BGCOLOR-=0x10;
-		}
-	}
-
-	//Green
-	if(main_Input->IsKeyDown(87))
-	{
-		if(main_Graphics->BGCOLOR%0x10000<0xF000) 
-		{
-			main_Graphics->BGCOLOR+=0x1000;
-		}
-	}
-	if(main_Input->IsKeyDown(83))
-	{
-		if(main_Graphics->BGCOLOR%0x10000>0x1000) 
-		{
-			main_Graphics->BGCOLOR-=0x1000;
-		}
-	}
-
-	//Red
-	if(main_Input->IsKeyDown(81))
-	{
-		if(main_Graphics->BGCOLOR%0x1000000<0xF00000) 
-		{
-			main_Graphics->BGCOLOR+=0x100000;
-		}
-	}
-	if(main_Input->IsKeyDown(65))
-	{
-		if(main_Graphics->BGCOLOR%0x1000000>0x100000) 
-		{
-			main_Graphics->BGCOLOR-=0x100000;
-		}
-	}
-
-	if(main_Input->IsMKeyDown(1)){
-		main_Graphics->BGCOLOR = main_Input->MGetX() + main_Input->MGetY()*0xFFF;
-	}
-	//Awesome, isn't it?))))
-	if(main_Input->IsMKeyDown(2)){
-		if(test==0)	test=main_Graphics->AddObject(new FontWrapper(main_Input->MGetX(), main_Input->MGetY(), 
-												main_Input->MGetX()+200, main_Input->MGetY()+200,
-												L"X"));
-		else
-		{
-			main_Graphics->RemoveObject(test);
-			test=main_Graphics->AddObject(new FontWrapper(main_Input->MGetX(), main_Input->MGetY(), 
-												main_Input->MGetX()+200, main_Input->MGetY()+200,
-												L"X"));
-		}
-	}
-		// End User input
 
 	//Implement Making Steaks for Happy Stanev
 
 	// Do the frame processing for the graphics object.
-	result = main_Graphics->Frame();
-	if(!result)
-	{
-		return false;
-	}
+	if(main_Graphics->Frame()) return true;
 
-	return true;
+	return false;
 }
 
 void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
