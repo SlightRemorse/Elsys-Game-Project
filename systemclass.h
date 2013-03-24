@@ -13,6 +13,7 @@
 #include "inputclass.h"
 #include "graphicsclass.h"
 #include "typeconv.h"
+#include "objectwrapper.h"
 
 #include "teststage.h"
 

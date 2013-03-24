@@ -54,6 +54,10 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
+	//Initializing the GameObject static members
+	GameObject::pMainGraph = main_Graphics; 
+	GameObject::pMainInput = main_Input;
+
 	stage1 = new TestStage(main_Graphics, main_Input); //Initializing the test stage
 
 	return true;
@@ -231,10 +235,22 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 }
 
 // Code Loop
+FontObject* obj=0;
+int i=0;
+
 bool SystemClass::Frame()
 {
 	stage1->Run();
-	
+	if(obj)
+	{
+		obj->CleanUp();
+		delete obj;
+	}
+	obj = new FontObject(250, 250, 300, 300, IntToWSTR(i));
+	if(obj->MouseOver()) ((FontWrapper*)obj->pGraphWrapper)->text_color=0xFFFF0000;
+
+	i++;
+
 	if(main_Input->IsKeyDown(VK_ESCAPE))
 	{
 		return false;
@@ -289,8 +305,11 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	dmScreenSettings.dmFields     = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
 	// Set Windowed Size;
-	screenWidth*=0.75;
-	screenHeight*=0.75;
+	if(!FULLSCREEN)
+	{
+		screenWidth*=0.75;
+		screenHeight*=0.75;
+	}
 
 	// Place the window in the middle of the screen.
 	posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth)  / 2;
