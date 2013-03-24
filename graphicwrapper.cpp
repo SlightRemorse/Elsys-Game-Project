@@ -6,7 +6,7 @@
 
 //Constructor
 
-FontWrapper::FontWrapper(int left, int top, int right, int bottom, LPCWSTR text)
+FontWrapper::FontWrapper(int left, int top, int right, int bottom, LPWSTR text)
 {
 	classtype=FONT;
 	text_str=text;
@@ -25,9 +25,10 @@ FontWrapper::~FontWrapper()
 {
 }
 
-void FontWrapper::CleanUp()
+void FontWrapper::CleanUp() // Freeing Memory
 {
-	delete pRect; // Freeing Memory
+	delete pRect;
+	delete text_str;
 }
 
 void FontWrapper::MoveRectBy(int x, int y)

@@ -19,12 +19,13 @@ TestStage::~TestStage()
 
 bool TestStage::Run()
 {
+	
 	pMainGraphics->RemoveObject(keys);
 
-	LPCWSTR string = L"Keys pressed:";
+	LPWSTR string = SafeWSTR(L"Keys pressed:");
 	for(int i=0; i<256; i++)
 	{
-		if(pMainInput->IsKeyDown(i)) string=JoinWSTR(string, IntToWSTR(i));
+		if(pMainInput->IsKeyDown(i)) string=JoinWSTR(string, IntToWSTR(i), true, true);
 	}
 	keys=pMainGraphics->AddObject(new FontWrapper(0,20,50,70, string));
 
@@ -101,14 +102,15 @@ bool TestStage::Run()
 	if(pMainInput->IsMKeyDown(2)){
 		if(test==0)	test=pMainGraphics->AddObject(new FontWrapper(pMainInput->MGetX(), pMainInput->MGetY(), 
 												pMainInput->MGetX()+200, pMainInput->MGetY()+200,
-												L"X"));
+												SafeWSTR(L"X")));
 		else
 		{
 			pMainGraphics->RemoveObject(test);
 			test=pMainGraphics->AddObject(new FontWrapper(pMainInput->MGetX(), pMainInput->MGetY(), 
 												pMainInput->MGetX()+200, pMainInput->MGetY()+200,
-												L"X"));
+												SafeWSTR(L"X")));
 		}
 	}
 	return true;
+	
 }

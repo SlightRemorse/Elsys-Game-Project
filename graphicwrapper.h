@@ -27,7 +27,7 @@ public:
 class FontWrapper: public GraphicWrapper
 {
 public:
-	FontWrapper(int, int, int, int, LPCWSTR);
+	FontWrapper(int, int, int, int, LPWSTR);
 	FontWrapper(const FontWrapper&);
 	~FontWrapper();
 
@@ -35,7 +35,7 @@ public:
 	void MoveRectBy(int, int);
 
 	RECT* pRect;
-	LPCWSTR text_str;
+	LPWSTR text_str;
 };
 
 //Globals

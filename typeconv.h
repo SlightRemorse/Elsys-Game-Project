@@ -6,8 +6,9 @@
 #include <Windows.h>
 
 //Functions
-LPCWSTR IntToWSTR(int);
-LPCWSTR JoinWSTR(LPCWSTR, LPCWSTR);
+LPWSTR IntToWSTR(int);
+LPWSTR JoinWSTR(LPCWSTR, LPCWSTR, bool=false, bool=false);
+LPWSTR SafeWSTR(LPCWSTR);
 
 
 #endif
