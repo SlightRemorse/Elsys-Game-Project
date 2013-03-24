@@ -6,9 +6,10 @@
 
 //Constructor
 
-FontWrapper::FontWrapper(int left, int top, int right, int bottom, LPWSTR text)
+FontWrapper::FontWrapper(int left, int top, int right, int bottom, LPWSTR text, D3DCOLOR color)
 {
 	classtype=FONT;
+	text_color=color;
 	text_str=text;
 	pRect = new RECT();
 	SetRect(pRect, left, top, right, bottom);

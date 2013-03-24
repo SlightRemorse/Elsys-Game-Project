@@ -137,9 +137,8 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 			main_Input->MCoord(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
 			main_Graphics->RemoveObject(MousePos);
 			MousePos=main_Graphics->AddObject(new FontWrapper(0, 0, 50, 50, 
-				JoinWSTR(SafeWSTR(L"Mouse Pos: "), 
-						JoinWSTR(IntToWSTR(main_Input->MGetX()), IntToWSTR(main_Input->MGetY()), true, true)
-						, true)));
+				JoinWSTR(true, SafeWSTR(L"Mouse Pos: "), IntToWSTR(main_Input->MGetX()), SafeWSTR(L" "), IntToWSTR(main_Input->MGetY()))
+				));
 			return 0;
 		}
 		//Mouse Left Button Click

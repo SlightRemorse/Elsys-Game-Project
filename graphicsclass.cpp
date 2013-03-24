@@ -133,12 +133,12 @@ bool GraphicsClass::Render()
 	{
 		if(vec_pGObj[i]->classtype==FONT)
 		{
-			pDX_Fonts->pD3DX_font->DrawText(NULL,
-											((FontWrapper*)vec_pGObj[i])->text_str,
+			pDX_Fonts->pD3DX_font->DrawText(NULL, // Sprite
+											((FontWrapper*)vec_pGObj[i])->text_str, //Text string
 											-1,
-											((FontWrapper*)vec_pGObj[i])->pRect,
+											((FontWrapper*)vec_pGObj[i])->pRect, //Text position
 											DT_LEFT|DT_NOCLIP,
-											0xFFFFFFFF);							
+											((FontWrapper*)vec_pGObj[i])->text_color); //Text Color							
 		}
 	}
 

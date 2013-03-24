@@ -27,13 +27,14 @@ public:
 class FontWrapper: public GraphicWrapper
 {
 public:
-	FontWrapper(int, int, int, int, LPWSTR);
+	FontWrapper(int, int, int, int, LPWSTR, D3DCOLOR=0xFFFFFFFF);
 	FontWrapper(const FontWrapper&);
 	~FontWrapper();
 
 	void CleanUp();
 	void MoveRectBy(int, int);
 
+	D3DCOLOR text_color;
 	RECT* pRect;
 	LPWSTR text_str;
 };
