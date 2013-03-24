@@ -18,10 +18,12 @@ GraphicsClass::~GraphicsClass()
 {
 }
 
-bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
+bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND current_hwnd)
 {
-	HRESULT hresult;
+	hwnd = current_hwnd; // Copy the hwnd
 
+	HRESULT hresult;
+	
 	//Create DirectX9 object
 	pGraph_DX9 = Direct3DCreate9(D3D_SDK_VERSION);
 	if(pGraph_DX9==0) return false;
@@ -37,7 +39,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	DX9pp.FullScreen_RefreshRateInHz=D3DPRESENT_RATE_DEFAULT; //Default Refresh Rate
 	DX9pp.PresentationInterval=D3DPRESENT_INTERVAL_DEFAULT; //Default Presentation rate
 	DX9pp.EnableAutoDepthStencil=false; //No depth/stencil buffer
-	
+
 	ToggleFullscreen(FULLSCREEN, screenWidth, screenHeight);
 
 	//Initialize Background Color to Black
@@ -137,8 +139,9 @@ bool GraphicsClass::Render()
 											((FontWrapper*)vec_pGObj[i])->text_str, //Text string
 											-1,
 											((FontWrapper*)vec_pGObj[i])->pRect, //Text position
-											DT_LEFT|DT_NOCLIP,
-											((FontWrapper*)vec_pGObj[i])->text_color); //Text Color							
+											DT_LEFT|DT_NOCLIP, //Aligned left, doesn't clip
+											((FontWrapper*)vec_pGObj[i])->text_color); //Text Color
+
 		}
 	}
 
@@ -175,9 +178,18 @@ bool GraphicsClass::ToggleFullscreen(bool fullscr, int screenWidth, int screenHe
 		DX9pp.BackBufferFormat=D3DFMT_R5G6B5;
 	} else
 	{
+		RECT* FullWindow = new RECT(); 
+		RECT* InsideWindow = new RECT();
+		GetClientRect(hwnd, InsideWindow);
+		GetWindowRect(hwnd, FullWindow);
+		int xdiff = (FullWindow->right - FullWindow->left) - InsideWindow->right;
+		int ydiff = (FullWindow->bottom - FullWindow->top) - InsideWindow->bottom;
+		delete FullWindow;
+		delete InsideWindow;
+
 		DX9pp.Windowed=true;
-		DX9pp.BackBufferWidth=screenWidth;
-		DX9pp.BackBufferHeight=screenHeight;
+		DX9pp.BackBufferWidth=screenWidth-xdiff;
+		DX9pp.BackBufferHeight=screenHeight-ydiff;
 		DX9pp.BackBufferFormat=D3DFMT_UNKNOWN; // Desktop default
 	}
 	return true;

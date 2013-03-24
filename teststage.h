@@ -3,6 +3,7 @@
 #define _TEST_STAGE_H_
 
 //Test Stage Class
+#include "objectwrapper.h"
 #include "graphicsclass.h"
 #include "typeconv.h"
 #include "inputclass.h"
@@ -14,6 +15,7 @@ class TestStage
 
 	GraphicWrapper* test;
 	GraphicWrapper* keys;
+	
 public:
 	TestStage(GraphicsClass*, InputClass*);
 	TestStage(const TestStage&);

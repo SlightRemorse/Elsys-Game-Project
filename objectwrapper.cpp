@@ -20,10 +20,9 @@ FontObject::~FontObject()
 }
 
 bool FontObject::MouseOver() // Needs More Work, Implement access to DirectFont's font size
-{
+{							//Alternatively we can ask the user to actually be mindful of the RECT* sizes  he gives...
 	if((pMainInput->MGetX() >= ((FontWrapper*)pGraphWrapper)->pRect->left) &&
-		(pMainInput->MGetX() <= ((FontWrapper*)pGraphWrapper)->pRect->left
-								+wcslen(((FontWrapper*)pGraphWrapper)->text_str)*9) &&
+		(pMainInput->MGetX() <= ((FontWrapper*)pGraphWrapper)->pRect->right) &&
 		(pMainInput->MGetY() >= ((FontWrapper*)pGraphWrapper)->pRect->top) &&
 		(pMainInput->MGetY() <= ((FontWrapper*)pGraphWrapper)->pRect->bottom)) return true;
 
@@ -32,7 +31,7 @@ bool FontObject::MouseOver() // Needs More Work, Implement access to DirectFont'
 
 bool FontObject::Click()
 {
-	if(MouseOver() && pMainInput->IsMKeyDown(1)) return true;
+	if(MouseOver() && pMainInput->IsMKeyDown(1) && (pMainInput->IsMKeyClicked(1)==false)) return true;
 	return false;
 }
 

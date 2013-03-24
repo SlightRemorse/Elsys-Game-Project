@@ -235,31 +235,34 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 }
 
 // Code Loop
-FontObject* obj=0;
-int i=0;
-
+FontObject* looptime=0;
+DWORD time;
 bool SystemClass::Frame()
 {
-	stage1->Run();
-	if(obj)
-	{
-		obj->CleanUp();
-		delete obj;
-	}
-	obj = new FontObject(250, 250, 300, 300, IntToWSTR(i));
-	if(obj->MouseOver()) ((FontWrapper*)obj->pGraphWrapper)->text_color=0xFFFF0000;
+	//Get Frame Start TIme
+	time=GetTickCount();
 
-	i++;
-
-	if(main_Input->IsKeyDown(VK_ESCAPE))
-	{
-		return false;
-	}
+	//Run Test Stage
+	if(!stage1->Run()) return false;
 
 	//Implement Making Steaks for Happy Stanev
 
+	//Set the mouse buttons we've clicked as clicked
+	main_Input->SetMouseClicks();
+
 	// Do the frame processing for the graphics object.
-	if(main_Graphics->Frame()) return true;
+	if(main_Graphics->Frame())
+	{
+		time = GetTickCount()-time; // Get the time elapsed until the end of the Frame
+		if(time==0) return true; //I must go fast and devision by zero is too slow!!!!
+		if(looptime)
+		{
+			looptime->CleanUp();
+			delete looptime;
+		}
+		looptime = new FontObject(0, screenHeight-58, 50, screenHeight, JoinWSTR(true, SafeWSTR(L"FPS: "), IntToWSTR((int)1000/time)));
+		return true;
+	}
 
 	return false;
 }

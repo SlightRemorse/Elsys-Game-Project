@@ -17,18 +17,41 @@ TestStage::~TestStage()
 {
 }
 
+//Temporary
+FontObject* mouse=0;
+FontObject* obj=0;
 bool TestStage::Run()
 {
 	
 	pMainGraphics->RemoveObject(keys);
+	if(mouse)
+	{
+		mouse->CleanUp();
+		delete mouse;
+	}
+
+	if(obj)
+	{
+		obj->CleanUp();
+		delete obj;
+	}
+	obj = new FontObject(250, 250, 340, 270, SafeWSTR(L"Click To Exit"));
+	if(obj->MouseOver()) ((FontWrapper*)obj->pGraphWrapper)->text_color=0xFFFF0000;
+	if(obj->Click()) return false;
 
 	LPWSTR string = SafeWSTR(L"Keys pressed:");
 	for(int i=0; i<256; i++)
 	{
 		if(pMainInput->IsKeyDown(i)) string=JoinWSTR(true, string, SafeWSTR(L" "), IntToWSTR(i));
 	}
-	keys=pMainGraphics->AddObject(new FontWrapper(0,20,50,70, string));
+	keys=pMainGraphics->AddObject(new FontWrapper(0,20,50,40, string));
 
+	LPWSTR string2 = SafeWSTR(L"Mouse pressed:");
+	for(int i=0; i<50; i++)
+	{
+		if(pMainInput->IsMKeyDown(i)) string2=JoinWSTR(true, string2, SafeWSTR(L" "), IntToWSTR(i));
+	}
+	mouse = new FontObject(0, 80, 50, 100, string2); 
 
 	if(pMainInput->IsKeyDown(VK_LEFT))
 	{
@@ -101,15 +124,21 @@ bool TestStage::Run()
 	//Awesome, isn't it?))))
 	if(pMainInput->IsMKeyDown(2)){
 		if(test==0)	test=pMainGraphics->AddObject(new FontWrapper(pMainInput->MGetX(), pMainInput->MGetY(), 
-												pMainInput->MGetX()+200, pMainInput->MGetY()+200,
+												pMainInput->MGetX()+10, pMainInput->MGetY()+20,
 												SafeWSTR(L"X"), 0xFFFF0000));
 		else
 		{
 			pMainGraphics->RemoveObject(test);
 			test=pMainGraphics->AddObject(new FontWrapper(pMainInput->MGetX(), pMainInput->MGetY(), 
-												pMainInput->MGetX()+200, pMainInput->MGetY()+200,
+												pMainInput->MGetX()+10, pMainInput->MGetY()+20,
 												SafeWSTR(L"X"), 0xFFFF0000));
 		}
+	}
+	//I love this
+	if((pMainInput->IsKeyDown(VK_CONTROL)) && (pMainInput->IsKeyDown(88))) 
+	{
+		pMainGraphics->RemoveObject(test);
+		test=0;
 	}
 	return true;
 	

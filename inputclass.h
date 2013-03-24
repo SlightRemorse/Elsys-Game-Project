@@ -12,6 +12,8 @@ public:
 	~InputClass();
 
 	void Initialize();
+	
+	void SetMouseClicks();
 
 	void KeyDown(unsigned int);
 	void KeyUp(unsigned int);
@@ -21,12 +23,16 @@ public:
 
 	bool IsKeyDown(unsigned int);
 	bool IsMKeyDown(unsigned int);
+	bool IsMKeyClicked(unsigned int);
 	int KeysDown();
 	int MGetX();
 	int MGetY();
 
 private:
+	void MKeyClick(unsigned int, bool);
+
 	int pressed_keys;
+	bool mouse_click[50];
 	bool mouse_keys[50];
 	int mouseX, mouseY;
 	bool main_keys[256];

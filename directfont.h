@@ -21,6 +21,7 @@ public:
 	bool SetFont(LPCWSTR, int, int=0, unsigned int=FW_NORMAL, int=1, bool=false, DWORD=ANTIALIASED_QUALITY);
 
 	ID3DXFont* pD3DX_font;
+	int Fheight, Fwidth;
 
 private:
 	IDirect3DDevice9* pDevice;

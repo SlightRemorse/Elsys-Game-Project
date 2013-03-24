@@ -23,6 +23,9 @@ bool DXFonts::SetFont(LPCWSTR fontname, int height, int width, unsigned int thic
 	//Checks
 	if((thickness>1000) || (thickness<0)) return false; // Makes sure thickness is correct 
 	
+	//Save height and width for later use
+	Fheight=height;
+	Fwidth=width;
 
 	HRESULT hresult;
 	hresult=D3DXCreateFont(pDevice,

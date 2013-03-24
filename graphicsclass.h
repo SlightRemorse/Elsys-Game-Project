@@ -43,6 +43,7 @@ private:
 	IDirect3D9* pGraph_DX9;
 	IDirect3DDevice9* pDX9_device;
 	D3DPRESENT_PARAMETERS DX9pp;
+	HWND hwnd;
 };
 //End Graphics Class
 
