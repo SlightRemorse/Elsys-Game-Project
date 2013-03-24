@@ -32,8 +32,8 @@ private:
 	void MKeyClick(unsigned int, bool);
 
 	int pressed_keys;
-	bool mouse_click[50];
-	bool mouse_keys[50];
+	bool mouse_click[3];
+	bool mouse_keys[3];
 	int mouseX, mouseY;
 	bool main_keys[256];
 };

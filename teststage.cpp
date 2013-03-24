@@ -47,7 +47,7 @@ bool TestStage::Run()
 	keys=pMainGraphics->AddObject(new FontWrapper(0,20,50,40, string));
 
 	LPWSTR string2 = SafeWSTR(L"Mouse pressed:");
-	for(int i=0; i<50; i++)
+	for(int i=0; i<3; i++)
 	{
 		if(pMainInput->IsMKeyDown(i)) string2=JoinWSTR(true, string2, SafeWSTR(L" "), IntToWSTR(i));
 	}

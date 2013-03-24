@@ -149,7 +149,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		case WM_LBUTTONDOWN:
 		{	
 			//MessageBox(main_hwnd, IntToWSTR(wparam), L"Mouse Click", MB_OK);
-			main_Input->MKeyDown(wparam);
+			main_Input->MKeyDown(1);
 			return 0;
 		}
 		//Fix Release Keys
@@ -163,7 +163,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		//Mouse Right Button Click
 		case WM_RBUTTONDOWN:
 		{
-			main_Input->MKeyDown(wparam);
+			main_Input->MKeyDown(2);
 			return 0;
 		}
 

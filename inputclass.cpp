@@ -26,7 +26,7 @@ void InputClass::Initialize()
 		main_keys[i] = false;
 	}
 	// Initialize Mouse keys.
-	for(int i=0; i<50; i++)
+	for(int i=0; i<3; i++)
 	{
 		mouse_click[i] = false;
 		mouse_keys[i] = false;
@@ -82,7 +82,7 @@ void InputClass::MCoord(unsigned int x, unsigned int y)
 
 void InputClass::SetMouseClicks()
 {
-	for(int i=0; i<50; i++)
+	for(int i=0; i<3; i++)
 	{
 		if(IsMKeyDown(i)) 
 			MKeyClick(i, true);
