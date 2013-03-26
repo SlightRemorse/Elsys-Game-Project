@@ -136,11 +136,11 @@ bool GraphicsClass::Render()
 		if(vec_pGObj[i]->classtype==FONT)
 		{
 			pDX_Fonts->pD3DX_font->DrawText(NULL, // Sprite
-											((FontWrapper*)vec_pGObj[i])->text_str, //Text string
+											*(((FontWrapper*)vec_pGObj[i])->ptext_str), //Text string
 											-1,
-											((FontWrapper*)vec_pGObj[i])->pRect, //Text position
-											DT_LEFT|DT_NOCLIP, //Aligned left, doesn't clip
-											((FontWrapper*)vec_pGObj[i])->text_color); //Text Color
+											*(((FontWrapper*)vec_pGObj[i])->ppRect), //Text position
+											*(((FontWrapper*)vec_pGObj[i])->pAlign)|DT_NOCLIP, //Aligned left, doesn't clip
+											*(((FontWrapper*)vec_pGObj[i])->ptext_color)); //Text Color
 
 		}
 	}
@@ -222,7 +222,6 @@ bool GraphicsClass::RemoveObject(GraphicWrapper* pWrapper)
 		if(vec_pGObj[i]==pWrapper)
 		{
 			vec_pGObj.erase(vec_pGObj.begin()+i);
-			pWrapper->CleanUp();
 			delete pWrapper;
 			return true; // Object found and eraced
 		}

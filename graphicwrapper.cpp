@@ -6,13 +6,13 @@
 
 //Constructor
 
-FontWrapper::FontWrapper(int left, int top, int right, int bottom, LPWSTR text, D3DCOLOR color)
+FontWrapper::FontWrapper(RECT** ppRECT, LPWSTR* pText, D3DCOLOR* pColor, DWORD* Align)
 {
 	classtype=FONT;
-	text_color=color;
-	text_str=text;
-	pRect = new RECT();
-	SetRect(pRect, left, top, right, bottom);
+	ptext_color=pColor;
+	ptext_str=pText;
+	ppRect = ppRECT;
+	pAlign=Align;
 }
 
 //Copy Constructor
@@ -24,20 +24,6 @@ FontWrapper::FontWrapper(const FontWrapper&)
 //Deconstructor
 FontWrapper::~FontWrapper()
 {
-}
-
-void FontWrapper::CleanUp() // Freeing Memory
-{
-	delete pRect;
-	delete text_str;
-}
-
-void FontWrapper::MoveRectBy(int x, int y)
-{
-	pRect->left+=x;
-	pRect->right+=x;
-	pRect->top+=y;
-	pRect->bottom+=y;
 }
 
 //End Font Wrapper

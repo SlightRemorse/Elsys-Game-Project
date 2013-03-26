@@ -26,7 +26,7 @@ public:
 class FontObject: public GameObject
 {
 public:
-	FontObject(int, int, int, int, LPWSTR, D3DCOLOR=0xFFFFFFFF);
+	FontObject(int, int, int, int, LPWSTR, D3DCOLOR=0xFFFFFFFF, DWORD=DT_CENTER);
 	FontObject(const FontObject&);
 	~FontObject();
 
@@ -34,6 +34,11 @@ public:
 
 	bool MouseOver();
 	bool Click();
+
+	DWORD align;
+	D3DCOLOR text_color;
+	RECT* pRect;
+	LPWSTR text_str;
 };
 
 //Globals

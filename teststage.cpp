@@ -35,21 +35,20 @@ bool TestStage::Menu()
 	GameObjectRelease(options);
 	GameObjectRelease(exit);
 
-	play = new FontObject(*pScreenX/2-16, *pScreenY/2-50, *pScreenX/2+16, *pScreenY/2-32, SafeWSTR(L"Play"));
-	options = new FontObject(*pScreenX/2-28, *pScreenY/2-25, *pScreenX/2+28, *pScreenY/2-6, SafeWSTR(L"Options"));
-	exit = new FontObject(*pScreenX/2-14, *pScreenY/2, *pScreenX/2+16, *pScreenY/2+16, SafeWSTR(L"Exit"));
+	play = new FontObject(*pScreenX/2-18, *pScreenY/2-40, *pScreenX/2+18, *pScreenY/2-20, SafeWSTR(L"Play"));
+	options = new FontObject(*pScreenX/2-25, *pScreenY/2-20, *pScreenX/2+25, *pScreenY/2, SafeWSTR(L"Options"));
+	exit = new FontObject(*pScreenX/2-18, *pScreenY/2, *pScreenX/2+18, *pScreenY/2+20, SafeWSTR(L"Exit"));
 	
 	if(exit->Click()) return false;
 
 	if(options->MouseOver()) 
 	{
-		delete ((FontWrapper*)options->pGraphWrapper)->text_str; // Remember to clean up your string pointers
-		((FontWrapper*)options->pGraphWrapper)->text_color=0xFFFF0000;
-		((FontWrapper*)options->pGraphWrapper)->text_str=SafeWSTR(L"Not yet implemented");
-		((FontWrapper*)options->pGraphWrapper)->pRect->left-=47;
+		delete  options->text_str; // Remember to clean up your string pointers
+				options->text_color=0xFFFF0000;
+		        options->text_str=SafeWSTR(L"Not yet implemented");
 	}
 
-	if(play->MouseOver()) ((FontWrapper*)play->pGraphWrapper)->text_color=0x99FFFFFF;
+	if(play->MouseOver()) play->text_color=0x99FFFFFF;
 	
 	if(play->Click()) 
 	{
@@ -61,7 +60,7 @@ bool TestStage::Menu()
 			return true;
 	}
 
-	if(exit->MouseOver()) ((FontWrapper*)exit->pGraphWrapper)->text_color=0x99FFFFFF;
+	if(exit->MouseOver()) exit->text_color=0x99FFFFFF;
 	
 	return true;
 }

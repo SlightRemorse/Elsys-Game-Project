@@ -6,9 +6,15 @@ GraphicsClass* GameObject::pMainGraph;
 InputClass* GameObject::pMainInput;
 
 //Constructor
-FontObject::FontObject(int left, int top, int right, int bottom, LPWSTR text, D3DCOLOR color)
+FontObject::FontObject(int left, int top, int right, int bottom, LPWSTR text, D3DCOLOR color, DWORD placement)
 {
-	pGraphWrapper = pMainGraph->AddObject(new FontWrapper(left, top, right, bottom, text, color));
+	pRect = new RECT();
+	SetRect(pRect, left, top, right, bottom);
+	text_str=text;
+	text_color=color;
+	align=placement;
+
+	pGraphWrapper = pMainGraph->AddObject(new FontWrapper(&pRect, &text_str, &text_color, &align));
 }
 //Copy Constructor
 FontObject::FontObject(const FontObject&)
@@ -21,10 +27,10 @@ FontObject::~FontObject()
 
 bool FontObject::MouseOver() // Needs More Work, Implement access to DirectFont's font size
 {							//Alternatively we can ask the user to actually be mindful of the RECT* sizes  he gives...
-	if((pMainInput->MGetX() >= ((FontWrapper*)pGraphWrapper)->pRect->left) &&
-		(pMainInput->MGetX() <= ((FontWrapper*)pGraphWrapper)->pRect->right) &&
-		(pMainInput->MGetY() >= ((FontWrapper*)pGraphWrapper)->pRect->top) &&
-		(pMainInput->MGetY() <= ((FontWrapper*)pGraphWrapper)->pRect->bottom)) return true;
+	if((pMainInput->MGetX() >= pRect->left) &&
+		(pMainInput->MGetX() <= pRect->right) &&
+		(pMainInput->MGetY() >= pRect->top) &&
+		(pMainInput->MGetY() <= pRect->bottom)) return true;
 
 	return false;
 }
@@ -37,5 +43,7 @@ bool FontObject::Click()
 
 void FontObject::CleanUp()
 {
+	delete pRect;
+	delete text_str;
 	pMainGraph->RemoveObject(pGraphWrapper);
 }

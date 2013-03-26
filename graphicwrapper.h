@@ -19,24 +19,20 @@ class GraphicWrapper
 {
 public:
 	GraphType classtype;
-
-	virtual void CleanUp()=0;
 };
 //End Graphic Object Class
 
 class FontWrapper: public GraphicWrapper
 {
 public:
-	FontWrapper(int, int, int, int, LPWSTR, D3DCOLOR=0xFFFFFFFF);
+	FontWrapper(RECT**, LPWSTR*, D3DCOLOR*, DWORD*);
 	FontWrapper(const FontWrapper&);
 	~FontWrapper();
 
-	void CleanUp();
-	void MoveRectBy(int, int);
-
-	D3DCOLOR text_color;
-	RECT* pRect;
-	LPWSTR text_str;
+	DWORD* pAlign;
+	D3DCOLOR* ptext_color;
+	RECT** ppRect;
+	LPWSTR* ptext_str;
 };
 
 //Globals

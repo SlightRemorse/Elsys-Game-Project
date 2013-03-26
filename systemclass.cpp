@@ -143,10 +143,10 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		case WM_MOUSEMOVE:
 		{
 			main_Input->MCoord(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
-			main_Graphics->RemoveObject(MousePos);
+			/*main_Graphics->RemoveObject(MousePos);
 			MousePos=main_Graphics->AddObject(new FontWrapper(0, 0, 50, 50, 
 				JoinWSTR(true, SafeWSTR(L"Mouse Pos: "), IntToWSTR(main_Input->MGetX()), SafeWSTR(L" "), IntToWSTR(main_Input->MGetY()))
-				));
+				));*/
 			return 0;
 		}
 		//Mouse Left Button Click
@@ -268,7 +268,7 @@ bool SystemClass::Frame()
 		time = GetTickCount()-time; // Get the time elapsed until the end of the Frame
 		if(time==0) return true; //I must go fast and devision by zero is too slow!!!!
 		GameObjectRelease(looptime);
-		looptime = new FontObject(0, inScreenHeight-20, 50, inScreenHeight, JoinWSTR(true, SafeWSTR(L"FPS: "), IntToWSTR((int)1000/time)));
+		looptime = new FontObject(0, inScreenHeight-20, 50, inScreenHeight, JoinWSTR(true, SafeWSTR(L"FPS: "), IntToWSTR((int)1000/time)), 0xFFFFFFFF, DT_LEFT);
 		return true;
 	}
 
