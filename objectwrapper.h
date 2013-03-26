@@ -7,6 +7,9 @@
 #include "graphicsclass.h"
 #include "inputclass.h"
 
+//Object release macro
+#define GameObjectRelease(p) { if(p) {(p)->CleanUp(); delete (p); (p)=0;} }
+
 class GameObject
 {
 public:
@@ -15,6 +18,7 @@ public:
 
 	GraphicWrapper* pGraphWrapper;
 
+	virtual void CleanUp()=0;
 	virtual bool MouseOver()=0;
 	virtual bool Click()=0;
 };

@@ -13,15 +13,23 @@ class TestStage
 	GraphicsClass* pMainGraphics;
 	InputClass* pMainInput;
 
-	GraphicWrapper* test;
-	GraphicWrapper* keys;
+	FontObject* exit;
+	FontObject* play;
+	FontObject* options;
 	
 public:
-	TestStage(GraphicsClass*, InputClass*);
+
+	TestStage(GraphicsClass*, InputClass*, int*, int*);
 	TestStage(const TestStage&);
 	~TestStage();
 
+	int* pScreenX;
+	int* pScreenY;
+
+	int stage;
+
 	bool Run();
+	bool Menu();
 };
 //End Test Stage Class
 

@@ -178,18 +178,9 @@ bool GraphicsClass::ToggleFullscreen(bool fullscr, int screenWidth, int screenHe
 		DX9pp.BackBufferFormat=D3DFMT_R5G6B5;
 	} else
 	{
-		RECT* FullWindow = new RECT(); 
-		RECT* InsideWindow = new RECT();
-		GetClientRect(hwnd, InsideWindow);
-		GetWindowRect(hwnd, FullWindow);
-		int xdiff = (FullWindow->right - FullWindow->left) - InsideWindow->right;
-		int ydiff = (FullWindow->bottom - FullWindow->top) - InsideWindow->bottom;
-		delete FullWindow;
-		delete InsideWindow;
-
 		DX9pp.Windowed=true;
-		DX9pp.BackBufferWidth=screenWidth-xdiff;
-		DX9pp.BackBufferHeight=screenHeight-ydiff;
+		DX9pp.BackBufferWidth=screenWidth;
+		DX9pp.BackBufferHeight=screenHeight;
 		DX9pp.BackBufferFormat=D3DFMT_UNKNOWN; // Desktop default
 	}
 	return true;

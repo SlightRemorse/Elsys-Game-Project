@@ -38,6 +38,10 @@ private:
 	WNDCLASSEX wc;
 	DEVMODE dmScreenSettings;
 	int screenWidth, screenHeight;
+
+	void SetInsideFrame();
+	int inScreenWidth, inScreenHeight;
+
 	int posX, posY;
 	bool busy;
 

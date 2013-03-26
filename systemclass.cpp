@@ -48,7 +48,11 @@ bool SystemClass::Initialize()
 	{
 		return false;
 	}
-	result = main_Graphics->Initialize(screenWidth, screenHeight, main_hwnd);
+
+	//Getting the inside frame of a window
+	SetInsideFrame();
+
+	result = main_Graphics->Initialize(inScreenWidth, inScreenHeight, main_hwnd);
 	if(!result)
 	{
 		return false;
@@ -58,7 +62,7 @@ bool SystemClass::Initialize()
 	GameObject::pMainGraph = main_Graphics; 
 	GameObject::pMainInput = main_Input;
 
-	stage1 = new TestStage(main_Graphics, main_Input); //Initializing the test stage
+	stage1 = new TestStage(main_Graphics, main_Input, &inScreenWidth, &inScreenHeight); //Initializing the test stage
 
 	return true;
 }
@@ -194,9 +198,10 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 					screenWidth = dmScreenSettings.dmPelsWidth;
 					screenHeight = dmScreenSettings.dmPelsHeight;
 					SetWindowLongPtr(main_hwnd, GWL_STYLE, WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_VISIBLE);
-					MoveWindow(main_hwnd, 0, 0, dmScreenSettings.dmPelsWidth, dmScreenSettings.dmPelsHeight, true);
+					MoveWindow(main_hwnd, 0, 0, screenWidth, screenHeight, true);
 					ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
-					main_Graphics->ResetDevice(true, dmScreenSettings.dmPelsWidth, dmScreenSettings.dmPelsHeight);
+					SetInsideFrame();
+					main_Graphics->ResetDevice(true, inScreenWidth, inScreenHeight);
 					
 					FULLSCREEN=true;
 				} else 
@@ -206,10 +211,11 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 					screenHeight = GetSystemMetrics(SM_CYSCREEN)*0.75;
 					posX=(GetSystemMetrics(SM_CXSCREEN) - screenWidth)  / 2;
 					posY=(GetSystemMetrics(SM_CXSCREEN) - screenHeight)  / 2;
-					SetWindowLongPtr(main_hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_VISIBLE);
+					SetWindowLongPtr(main_hwnd, GWL_STYLE, WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_VISIBLE);
 					MoveWindow(main_hwnd, posX, posY, screenWidth, screenHeight, true);
 					ChangeDisplaySettings(NULL, 0);
-					main_Graphics->ResetDevice(false, screenWidth, screenHeight);
+					SetInsideFrame();
+					main_Graphics->ResetDevice(false, inScreenWidth, inScreenHeight);
 
 					FULLSCREEN=false;
 				}
@@ -236,14 +242,20 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 
 // Code Loop
 FontObject* looptime=0;
-DWORD time;
 bool SystemClass::Frame()
 {
 	//Get Frame Start TIme
-	time=GetTickCount();
+	WORD time=GetTickCount();
 
 	//Run Test Stage
-	if(!stage1->Run()) return false;
+	if(stage1->stage==0) 
+	{
+		if(!stage1->Menu()) return false;
+	}
+	else 
+	{
+		if(!stage1->Run()) return false;
+	}
 
 	//Implement Making Steaks for Happy Stanev
 
@@ -255,12 +267,8 @@ bool SystemClass::Frame()
 	{
 		time = GetTickCount()-time; // Get the time elapsed until the end of the Frame
 		if(time==0) return true; //I must go fast and devision by zero is too slow!!!!
-		if(looptime)
-		{
-			looptime->CleanUp();
-			delete looptime;
-		}
-		looptime = new FontObject(0, screenHeight-58, 50, screenHeight, JoinWSTR(true, SafeWSTR(L"FPS: "), IntToWSTR((int)1000/time)));
+		GameObjectRelease(looptime);
+		looptime = new FontObject(0, inScreenHeight-20, 50, inScreenHeight, JoinWSTR(true, SafeWSTR(L"FPS: "), IntToWSTR((int)1000/time)));
 		return true;
 	}
 
@@ -327,10 +335,10 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	} else 
 	{
 		main_hwnd = CreateWindowEx(WS_EX_APPWINDOW, main_applicationName, main_applicationName, 
-								   WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
+								   WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
 								   posX, posY, screenWidth, screenHeight, NULL, NULL, main_hinstance, NULL);
 	}
-	
+
 	// Bring the window up on the screen and set it as main focus.
 	ShowWindow(main_hwnd, SW_SHOW);
 	SetForegroundWindow(main_hwnd);
@@ -388,4 +396,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 			return pApplicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);
 		}
 	}
+}
+
+//Getting the inside frame of a window
+void SystemClass::SetInsideFrame()
+{
+	RECT* InsideWindow = new RECT();
+	GetClientRect(main_hwnd, InsideWindow);
+
+	inScreenWidth=InsideWindow->right;
+	inScreenHeight=InsideWindow->bottom;
+
+	delete InsideWindow;
 }
