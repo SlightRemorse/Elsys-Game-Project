@@ -18,6 +18,9 @@ public:
 
 	GraphicWrapper* pGraphWrapper;
 
+	virtual bool Hide()=0;
+	virtual bool Display()=0;
+
 	virtual void CleanUp()=0;
 	virtual bool MouseOver()=0;
 	virtual bool Click()=0;
@@ -29,6 +32,9 @@ public:
 	FontObject(int, int, int, int, LPWSTR, D3DCOLOR=0xFFFFFFFF, DWORD=DT_CENTER);
 	FontObject(const FontObject&);
 	~FontObject();
+
+	bool Hide();
+	bool Display();
 
 	void CleanUp();
 

@@ -95,7 +95,7 @@ void InputClass::MKeyClick(unsigned int x, bool flag)
 	mouse_click[x]=flag;
 }
 
-bool InputClass::IsMKeyClicked(unsigned int x)
+bool InputClass::IsMKeyDownHold(unsigned int x)
 {
 	return mouse_click[x];
 }
@@ -109,6 +109,12 @@ bool InputClass::IsKeyDown(unsigned int key)
 bool InputClass::IsMKeyDown(unsigned int key)
 {
 	return mouse_keys[key];
+}
+
+bool InputClass::IsMKeyClick(unsigned int key)
+{
+	if((IsMKeyDown(key)) && (IsMKeyDownHold(key)==false)) return true;
+	else return false;
 }
 
 int InputClass::KeysDown() 

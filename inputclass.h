@@ -23,7 +23,8 @@ public:
 
 	bool IsKeyDown(unsigned int);
 	bool IsMKeyDown(unsigned int);
-	bool IsMKeyClicked(unsigned int);
+	bool IsMKeyDownHold(unsigned int);
+	bool IsMKeyClick(unsigned int);
 	int KeysDown();
 	int MGetX();
 	int MGetY();

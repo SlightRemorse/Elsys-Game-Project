@@ -25,6 +25,28 @@ FontObject::~FontObject()
 {
 }
 
+
+bool FontObject::Display()
+{
+	if(pGraphWrapper==0)
+	{
+		pGraphWrapper = pMainGraph->AddObject(new FontWrapper(&pRect, &text_str, &text_color, &align));
+		return true;
+	}
+	return false; // pGraphWrapper is already displaying
+}
+
+bool FontObject::Hide()
+{
+	if(pGraphWrapper)
+	{
+		pMainGraph->RemoveObject(pGraphWrapper);
+		pGraphWrapper=0;
+		return true;
+	}
+	return false; // Object is already hidden/nonexistant
+}
+
 bool FontObject::MouseOver() // Needs More Work, Implement access to DirectFont's font size
 {							//Alternatively we can ask the user to actually be mindful of the RECT* sizes  he gives...
 	if((pMainInput->MGetX() >= pRect->left) &&
@@ -37,7 +59,7 @@ bool FontObject::MouseOver() // Needs More Work, Implement access to DirectFont'
 
 bool FontObject::Click()
 {
-	if(MouseOver() && pMainInput->IsMKeyDown(1) && (pMainInput->IsMKeyClicked(1)==false)) return true;
+	if(MouseOver() && pMainInput->IsMKeyClick(1)) return true;
 	return false;
 }
 
