@@ -41,6 +41,9 @@ public:
 	bool MouseOver();
 	bool Click();
 
+	void MoveX(int);
+	void MoveY(int);
+
 	DWORD align;
 	D3DCOLOR text_color;
 	RECT* pRect;

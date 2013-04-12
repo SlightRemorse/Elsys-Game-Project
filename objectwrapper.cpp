@@ -69,3 +69,17 @@ void FontObject::CleanUp()
 	delete text_str;
 	pMainGraph->RemoveObject(pGraphWrapper);
 }
+
+void FontObject::MoveX(int x)
+{
+	pRect->left+=x;
+	pRect->right+=x;
+	return;
+}
+
+void FontObject::MoveY(int y)
+{
+	pRect->top+=y;
+	pRect->bottom+=y;
+	return;
+}

@@ -2,6 +2,9 @@
 #ifndef _TEST_STAGE_H_
 #define _TEST_STAGE_H_
 
+//Includes
+#include <vector>
+
 //Test Stage Class
 #include "objectwrapper.h"
 #include "graphicsclass.h"
