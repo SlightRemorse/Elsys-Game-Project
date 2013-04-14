@@ -198,6 +198,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 					ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
 					SetInsideFrame();
 					main_Graphics->ResetDevice(true, inScreenWidth, inScreenHeight);
+					stage1->OnResize();
 					
 					FULLSCREEN=true;
 				} else 
@@ -212,6 +213,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 					ChangeDisplaySettings(NULL, 0);
 					SetInsideFrame();
 					main_Graphics->ResetDevice(false, inScreenWidth, inScreenHeight);
+					stage1->OnResize();
 
 					FULLSCREEN=false;
 				}
@@ -262,6 +264,7 @@ bool SystemClass::Frame()
 	if(main_Graphics->Frame())
 	{
 		time = GetTickCount()-time; // Get the time elapsed until the end of the Frame
+		stage1->SetElapsedTime(time);
 		if(time==0) return true; //I must go fast and devision by zero is too slow!!!!
 		GameObjectRelease(looptime);
 		looptime = new FontObject(0, inScreenHeight-20, 50, inScreenHeight, JoinWSTR(true, SafeWSTR(L"FPS: "), IntToWSTR((int)1000/time)), 0xFFFFFFFF, DT_LEFT);

@@ -19,6 +19,8 @@ class TestStage
 	FontObject* exit;
 	FontObject* play;
 	FontObject* options;
+
+	int elapsed;
 	
 public:
 
@@ -31,11 +33,35 @@ public:
 
 	int stage;
 
+	void SetElapsedTime(int);
 	void OnResize();
 	bool Run();
 	bool Menu();
+
+	std::vector<struct bullet*> bullets;
+
+	void bulletSetup(int);
+	bool bulletRelease(struct bullet*);
+	void bulletFrame();
+
+	int refire;
 };
 //End Test Stage Class
+
+//Test Bullet struct
+struct bullet
+{
+	FontObject* pBulletFont;
+
+	double yratio;
+	double xratio;
+
+	int xbuffer;
+	int ybuffer;
+
+	int wspeed;
+};
+//End Test struct
 
 
 #endif

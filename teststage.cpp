@@ -17,6 +17,8 @@ TestStage::TestStage(GraphicsClass* pGraphics, InputClass* pInput, int* screenwi
 	play = 0;
 
 	stage = 0; // 0 Menu, 1 Run
+
+	refire=0; // my weapon is ready
 }
 //Copy Constructor
 TestStage::TestStage(const TestStage&)
@@ -26,6 +28,23 @@ TestStage::TestStage(const TestStage&)
 TestStage::~TestStage()
 {
 }
+
+void TestStage::OnResize()
+{
+	GameObjectRelease(play);
+	if(!play) play = new FontObject(*pScreenX/2-18, *pScreenY/2-40, *pScreenX/2+18, *pScreenY/2-20, SafeWSTR(L"Play"));
+	GameObjectRelease(options);
+	if(!options) options = new FontObject(*pScreenX/2-25, *pScreenY/2-20, *pScreenX/2+25, *pScreenY/2, SafeWSTR(L"Options"));
+	GameObjectRelease(exit);
+	if(!exit) exit = new FontObject(*pScreenX/2-18, *pScreenY/2, *pScreenX/2+18, *pScreenY/2+20, SafeWSTR(L"Exit"));
+
+	if(stage!=0)
+	{
+		play->Hide();
+		options->Hide();
+		exit->Hide();
+	}
+};
 
 //Example Menu
 bool up=false;
@@ -84,19 +103,12 @@ bool TestStage::Menu()
 //test ptrs
 FontObject* player = 0;
 std::vector <FontObject*> os;
-FontObject* bullet;
+
+int xspeed;
+int yspeed;
 
 FontObject* pts = 0;
 int score=0;
-int xspeed=0;
-int yspeed=0;
-double yratio=0;
-double xratio=0;
-int xbuffer = 0;
-int xmove = 0;
-int ybuffer = 0;
-int ymove = 0;
-int wspeed=5;
 
 bool TestStage::Run()
 {
@@ -105,7 +117,7 @@ bool TestStage::Run()
 			stage = 0;
 			player->Hide();
 			for(int i=0; i<os.size(); i++) os[i]->Hide();
-			if(bullet)bullet->Hide();
+			for(int i=0; i<bullets.size(); i++) bullets[i]->pBulletFont->Hide();
 			return true;
 	}
 	//test code
@@ -116,58 +128,6 @@ bool TestStage::Run()
 			int x=rand()%(*pScreenX-10)+5;
 			int y=rand()%(*pScreenY-10)+5;
 			os.push_back(new FontObject(x-5, y-5, x+5, y+9, SafeWSTR(L"O")));
-	}
-	if(pMainInput->IsMKeyClick(2)) 
-	{
-		GameObjectRelease(bullet);
-		}
-
-	if(pMainInput->IsMKeyClick(1))
-	{
-		if(pMainInput->MGetX()<player->pRect->left && pMainInput->MGetY()>player->pRect->bottom)
-		{
-			int a=player->pRect->left-pMainInput->MGetX();
-			int b=pMainInput->MGetY()-player->pRect->bottom;
-			double c=sqrt((double)((a*a)+(b*b)));
-			
-			xratio=wspeed*(a/c);
-			yratio=wspeed*(b/c);
-			if(!bullet)bullet=new FontObject(player->pRect->left, player->pRect->bottom,player->pRect->left-3, player->pRect->bottom+3, SafeWSTR(L"."));
-		
-		}
-		else if(pMainInput->MGetX()>player->pRect->left && pMainInput->MGetY()>player->pRect->bottom)
-		{
-			int a=pMainInput->MGetX()-player->pRect->left;
-			int b=pMainInput->MGetY()-player->pRect->bottom;
-			double c=sqrt((double)((a*a)+(b*b)));
-
-			xratio=wspeed*(a/c);
-			yratio=wspeed*(b/c);
-			if(!bullet)bullet=new FontObject(player->pRect->right, player->pRect->bottom, player->pRect->right+3, player->pRect->bottom+3, SafeWSTR(L"."));
-
-		}
-		else if(pMainInput->MGetX()<player->pRect->left && pMainInput->MGetY()<player->pRect->top)
-		{
-			int a=player->pRect->left-pMainInput->MGetX();
-			int b=player->pRect->top-pMainInput->MGetY();
-			double c=sqrt((double)((a*a)+(b*b)));
-
-			xratio=wspeed*(a/c);
-			yratio=wspeed*(b/c);
-			if(!bullet) bullet = new FontObject(player->pRect->left, player->pRect->top, player->pRect->left-3, player->pRect->top-3, SafeWSTR(L"."));
-			
-		}
-		else if(pMainInput->MGetX()>player->pRect->left && pMainInput->MGetY()<player->pRect->top)
-		{
-			int a=pMainInput->MGetX()-player->pRect->right;
-			int b=player->pRect->top-pMainInput->MGetY();
-			double c=sqrt((double)((a*a)+(b*b)));
-
-			xratio=wspeed*(a/c);
-			yratio=wspeed*(b/c);
-			if(!bullet)bullet= new FontObject(player->pRect->right, player->pRect->top, player->pRect->right+3, player->pRect->top-3, SafeWSTR(L"."));
-			
-		}
 	}
 
 	if(!pts) pts = new FontObject(0,0,40,9, SafeWSTR(L"Score: "), 0xFFFFFFFF, DT_LEFT);
@@ -196,67 +156,21 @@ bool TestStage::Run()
 
 	//test move bullet
 	
-	while(bullet)
+	if(pMainInput->IsMKeyDownHold(1)) 
 	{
-		xmove = 0;
-		xbuffer+=xratio;
-		ymove = 0;
-		ybuffer += yratio;
-		if(xbuffer>0)
+		if(refire<=0) 
 		{
-			while(xbuffer>=1)
-			{
-				xbuffer-=1;
-				xmove+=1;
-			}
-			bullet->MoveX(xmove);
+				bulletSetup(5);
+				refire=100;
 		}
-		else
-		{
-			while(xbuffer<=-1)
-			{
-				xbuffer+=1;
-				xmove-=1;
-			}
-			bullet->MoveX(xmove);
-		}
-		if(yratio>0)
-		{
-			while(ybuffer>=1)
-			{
-				ybuffer-=1;
-				ymove+=1;
-			}
-			bullet->MoveY(ymove);
-		}
-		else
-		{
-			while(ybuffer<=-1)
-			{
-				ybuffer+=1;
-				ymove-=1;
-			}
-			bullet->MoveY(ymove);
-		}
+	}
+	refire-=elapsed;
 
-	}
-	//delete bullet
-	if(bullet->pRect->top<0)
-	{	
-		GameObjectRelease(bullet);
-	}
-	else if(bullet->pRect->bottom > *pScreenX)
-	{	
-		GameObjectRelease(bullet);
-	}
-	else if(bullet->pRect->left < 0)
-	{	
-		GameObjectRelease(bullet);
-	}
-	else if(bullet->pRect->right > *pScreenY)
-	{	
-		GameObjectRelease(bullet);
-	}
+
+	bulletFrame(); // Run the bullet Frame
+
+
+	//End bullet
 
 	//Test "hitbox"
 	if(player->MouseOver()) player->text_color=0xFFFF0000;
@@ -307,9 +221,126 @@ bool TestStage::Run()
 	}
 
 	for(int i=0; i<os.size(); i++) os[i]->Display();
+	for(int i=0; i<bullets.size(); i++) bullets[i]->pBulletFont->Display();
 	player->Display();
-	if(bullet) bullet->Display();
 	//end test code
 	
 	return true;
+}
+
+void TestStage::SetElapsedTime(int time)
+{
+	elapsed=time;
+}
+
+//Bullet Stuff
+void TestStage::bulletSetup(int speed)
+{
+	bullet* pNewBullet = new bullet();
+	pNewBullet->wspeed=speed;
+
+	int xline=pMainInput->MGetX()-player->pRect->left;
+	int yline=pMainInput->MGetY()-player->pRect->bottom;
+	double sline=sqrt((double)((xline*xline)+(yline*yline)));
+			
+	pNewBullet->xratio=pNewBullet->wspeed*(xline/sline);
+	pNewBullet->yratio=pNewBullet->wspeed*(yline/sline);
+
+	pNewBullet->xbuffer=0;
+	pNewBullet->ybuffer=0;
+
+	int centplayerx = (player->pRect->left+player->pRect->right)/2;
+	int centplayery = (player->pRect->top+player->pRect->bottom)/2;
+
+	pNewBullet->pBulletFont = new FontObject(centplayerx-1, centplayery-8, centplayerx+1, centplayery+5, SafeWSTR(L"."));
+
+	bullets.push_back(pNewBullet);
+};
+
+bool TestStage::bulletRelease(bullet* pbullet)
+{
+			GameObjectRelease(pbullet->pBulletFont);
+			delete pbullet;
+			return true;
+};
+
+
+void TestStage::bulletFrame()
+{
+	for(int i=0; i<bullets.size(); i++)
+	{
+		//  Move the bullets
+
+		int xmove = 0;
+		int ymove = 0;
+
+		bullets[i]->xbuffer+=bullets[i]->xratio;
+		bullets[i]->ybuffer+=bullets[i]->yratio;
+
+		if(bullets[i]->xbuffer>0)
+		{
+			while(bullets[i]->xbuffer>=1)
+			{
+				bullets[i]->xbuffer-=1;
+				xmove+=1;
+			}
+			bullets[i]->pBulletFont->MoveX(xmove);
+			xmove=0;
+		}
+		else
+		{
+			while(bullets[i]->xbuffer<=-1)
+			{
+				bullets[i]->xbuffer+=1;
+				xmove-=1;
+			}
+			bullets[i]->pBulletFont->MoveX(xmove);
+			xmove=0;
+		}
+
+		if(bullets[i]->yratio>0)
+		{
+			while(bullets[i]->ybuffer>=1)
+			{
+				bullets[i]->ybuffer-=1;
+				ymove+=1;
+			}
+			bullets[i]->pBulletFont->MoveY(ymove);
+			ymove=0;
+		}
+		else
+		{
+			while(bullets[i]->ybuffer<=-1)
+			{
+				bullets[i]->ybuffer+=1;
+				ymove-=1;
+			}
+			bullets[i]->pBulletFont->MoveY(ymove);
+			ymove=0;
+		}
+
+		//Check if out of bounds and release
+
+		if(bullets[i]->pBulletFont->pRect->top<0)
+		{	
+			bulletRelease(bullets[i]);
+			bullets.erase(bullets.begin()+i);
+		}
+		else if(bullets[i]->pBulletFont->pRect->bottom > *pScreenY)
+		{	
+			bulletRelease(bullets[i]);
+			bullets.erase(bullets.begin()+i);
+		}
+		else if(bullets[i]->pBulletFont->pRect->left < 0)
+		{	
+			bulletRelease(bullets[i]);
+			bullets.erase(bullets.begin()+i);
+		}
+		else if(bullets[i]->pBulletFont->pRect->right > *pScreenX)
+		{	
+			bulletRelease(bullets[i]);
+			bullets.erase(bullets.begin()+i);
+		}
+
+	}
 }
