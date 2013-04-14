@@ -84,11 +84,14 @@ bool TestStage::Menu()
 //test ptrs
 FontObject* player = 0;
 std::vector <FontObject*> os;
+FontObject* bullet;
 
 FontObject* pts = 0;
 int score=0;
 int xspeed=0;
 int yspeed=0;
+double yratio=0;
+double xratio=0;
 bool TestStage::Run()
 {
 	if(pMainInput->IsKeyDown(VK_ESCAPE)) 
@@ -96,9 +99,11 @@ bool TestStage::Run()
 			stage = 0;
 			player->Hide();
 			for(int i=0; i<os.size(); i++) os[i]->Hide();
+			bullet->Hide();
 			return true;
 	}
 	//test code
+	
 	if(!player) player = new FontObject(*pScreenX/2-5, *pScreenY/2-5, *pScreenX/2+5, *pScreenY/2+9, SafeWSTR(L"X"));
 	if(os.size()<3) 
 	{
@@ -106,31 +111,72 @@ bool TestStage::Run()
 			int y=rand()%(*pScreenY-10)+5;
 			os.push_back(new FontObject(x-5, y-5, x+5, y+9, SafeWSTR(L"O")));
 	}
+	if(pMainInput->IsKeyDown(VK_LBUTTON))
+	{
+		if(pMainInput->MGetX()<player->pRect->left && pMainInput->MGetY()>player->pRect->top)
+		{
+			double a=player->pRect->left-pMainInput->MGetX();
+			double b=player->pRect->top-pMainInput->MGetY();
+			yratio=a/b;
+			xratio=-1;
+			if(!bullet)bullet=new FontObject(player->pRect->left, player->pRect->bottom, player->pRect->bottom+3, player->pRect->left-3, SafeWSTR(L"."));
+		
+		}
+		else if(pMainInput->MGetX()>player->pRect->left && pMainInput->MGetY()>player->pRect->top)
+		{
+			double a=pMainInput->MGetX()-player->pRect->left;
+			double b=pMainInput->MGetY()-player->pRect->top;
+			//xratio 1 po default (na 1 x kolko y otgovorq v slucheq)
+			yratio=a/b;
+			xratio=1;
+			if(!bullet)bullet=new FontObject(player->pRect->right, player->pRect->bottom, player->pRect->bottom+3, player->pRect->right+3, SafeWSTR(L"."));
+
+		}
+		else if(pMainInput->MGetX()<player->pRect->left && pMainInput->MGetY()<player->pRect->top)
+		{
+			double a=player->pRect->left-pMainInput->MGetX();
+			double b=player->pRect->top-pMainInput->MGetY();
+			yratio=-a/b;
+			xratio=-1;
+			if(!bullet)bullet= new FontObject(player->pRect->left, player->pRect->top, player->pRect->top-3, player->pRect->left-3, SafeWSTR(L"."));
+			
+		}
+		else if(pMainInput->MGetX()>player->pRect->left && pMainInput->MGetY()<player->pRect->top)
+		{
+			double a=pMainInput->MGetX()-player->pRect->left;
+			double b=player->pRect->top-pMainInput->MGetY();
+			yratio=-a/b;
+			xratio=1;
+			if(!bullet)bullet= new FontObject(player->pRect->right, player->pRect->top, player->pRect->top-3, player->pRect->right+3, SafeWSTR(L"."));
+			
+		}
+	}
 
 	if(!pts) pts = new FontObject(0,0,40,9, SafeWSTR(L"Score: "), 0xFFFFFFFF, DT_LEFT);
 	
 	delete pts->text_str;
 	pts->text_str = JoinWSTR(true, SafeWSTR(L"Score: "), IntToWSTR(score));
 
-	if(pMainInput->IsKeyDown(VK_UP)) yspeed-=1;
-	if(pMainInput->IsKeyDown(VK_DOWN)) yspeed+=1;
-	if(pMainInput->IsKeyDown(VK_LEFT)) xspeed-=1;
-	if(pMainInput->IsKeyDown(VK_RIGHT)) xspeed+=1;
+	if(pMainInput->IsKeyDown(VK_UP)) yspeed-=3;
+	if(pMainInput->IsKeyDown(VK_DOWN)) yspeed+=3;
+	if(pMainInput->IsKeyDown(VK_LEFT)) xspeed-=3;
+	if(pMainInput->IsKeyDown(VK_RIGHT)) xspeed+=3;
 
 	player->MoveX(xspeed);
 	player->MoveY(yspeed);
 	
-	if(player->pRect->left<=0) xspeed*=-1;
-	if(player->pRect->top<=0) yspeed*=-1;
+	xspeed=0;
+	yspeed=0;
+	
 
-	if(player->pRect->right>=*pScreenX) xspeed*=-1;
-	if(player->pRect->bottom>=*pScreenY) xspeed*=-1;
+	if(player->pRect->left<0) player->MoveX(*pScreenX-player->pRect->right);
+	if(player->pRect->right>*pScreenX) player->MoveX(-(player->pRect->left));
+	if(player->pRect->top<0) player->MoveY(*pScreenY-player->pRect->bottom);
+	if(player->pRect->bottom>*pScreenY+1) player->MoveY(-(player->pRect->top));
 
-	if(player->pRect->left<0) player->MoveX(player->pRect->left*(-1));
-	if(player->pRect->right>*pScreenX) player->MoveX(*pScreenX-player->pRect->right);
-	if(player->pRect->top<0) player->MoveY(player->pRect->top*(-1));
-	if(player->pRect->bottom>*pScreenY+1) player->MoveY(*pScreenY-player->pRect->bottom);
-
+	//test move bullet
+	bullet->MoveX(xratio);
+	bullet->MoveY(yratio);
 	//Test "hitbox"
 	if(player->MouseOver()) player->text_color=0xFFFF0000;
 	else player->text_color=0xFFFFFFFF;
@@ -181,6 +227,7 @@ bool TestStage::Run()
 
 	for(int i=0; i<os.size(); i++) os[i]->Display();
 	player->Display();
+	bullet->Display();
 	//end test code
 	return true;
 }
