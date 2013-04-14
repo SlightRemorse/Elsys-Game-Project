@@ -56,8 +56,8 @@ struct bullet
 	double yratio;
 	double xratio;
 
-	int xbuffer;
-	int ybuffer;
+	double xbuffer;
+	double ybuffer;
 
 	int wspeed;
 };

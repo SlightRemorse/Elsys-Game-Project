@@ -161,7 +161,7 @@ bool TestStage::Run()
 		if(refire<=0) 
 		{
 				bulletSetup(5);
-				refire=100;
+				refire=125;
 		}
 	}
 	refire-=elapsed;
