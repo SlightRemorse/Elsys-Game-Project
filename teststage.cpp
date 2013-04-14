@@ -220,6 +220,52 @@ bool TestStage::Run()
 		}
 	}
 
+	for(int i=0; i<os.size(); i++)
+	{
+		for(int k =0 ; k<bullets.size(); k++)
+		{
+			if(bullets[k]->pBulletFont->pRect->left<os[i]->pRect->right
+			&& bullets[k]->pBulletFont->pRect->left>os[i]->pRect->left
+			&& bullets[k]->pBulletFont->pRect->top<os[i]->pRect->bottom
+			&& bullets[k]->pBulletFont->pRect->top>os[i]->pRect->top)
+			{
+				GameObjectRelease(os[i]);
+				os.erase(os.begin()+i);
+				score++;
+				i--;
+			}
+			else if(bullets[k]->pBulletFont->pRect->right>os[i]->pRect->left
+			&& bullets[k]->pBulletFont->pRect->right<os[i]->pRect->right
+			&& bullets[k]->pBulletFont->pRect->top<os[i]->pRect->bottom
+			&& bullets[k]->pBulletFont->pRect->top>os[i]->pRect->top) 
+			{
+				GameObjectRelease(os[i]);
+				os.erase(os.begin()+i);
+				score++;
+				i--;
+			}
+			else if(bullets[k]->pBulletFont->pRect->left<os[i]->pRect->right
+				&& bullets[k]->pBulletFont->pRect->left>os[i]->pRect->left
+				&& bullets[k]->pBulletFont->pRect->bottom>os[i]->pRect->top
+				&& bullets[k]->pBulletFont->pRect->bottom<os[i]->pRect->bottom) 
+			{
+				GameObjectRelease(os[i]);
+				os.erase(os.begin()+i);
+				score++;
+				i--;
+			}
+			else if(bullets[k]->pBulletFont->pRect->right>os[i]->pRect->left
+				&& bullets[k]->pBulletFont->pRect->right<os[i]->pRect->right
+				&& bullets[k]->pBulletFont->pRect->bottom>os[i]->pRect->top
+				&& bullets[k]->pBulletFont->pRect->bottom<os[i]->pRect->bottom) 
+			{
+				GameObjectRelease(os[i]);
+				os.erase(os.begin()+i);
+				score++;
+				i--;
+			}
+		}
+	}
 	for(int i=0; i<os.size(); i++) os[i]->Display();
 	for(int i=0; i<bullets.size(); i++) bullets[i]->pBulletFont->Display();
 	player->Display();
