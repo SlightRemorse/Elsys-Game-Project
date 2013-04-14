@@ -19,6 +19,7 @@ TestStage::TestStage(GraphicsClass* pGraphics, InputClass* pInput, int* screenwi
 	stage = 0; // 0 Menu, 1 Run
 
 	refire=0; // my weapon is ready
+	spawnspeed=750; // speed of spawning
 }
 //Copy Constructor
 TestStage::TestStage(const TestStage&)
@@ -102,7 +103,6 @@ bool TestStage::Menu()
 
 //test ptrs
 FontObject* player = 0;
-std::vector <FontObject*> os;
 
 int xspeed;
 int yspeed;
@@ -116,19 +116,13 @@ bool TestStage::Run()
 	{
 			stage = 0;
 			player->Hide();
-			for(int i=0; i<os.size(); i++) os[i]->Hide();
+			for(int i=0; i<enemies.size(); i++) enemies[i]->pEnemyFont->Hide();
 			for(int i=0; i<bullets.size(); i++) bullets[i]->pBulletFont->Hide();
 			return true;
 	}
 	//test code
 	
 	if(!player) player = new FontObject(*pScreenX/2-5, *pScreenY/2-5, *pScreenX/2+5, *pScreenY/2+9, SafeWSTR(L"X"));
-	if(os.size()<3) 
-	{
-			int x=rand()%(*pScreenX-10)+5;
-			int y=rand()%(*pScreenY-10)+5;
-			os.push_back(new FontObject(x-5, y-5, x+5, y+9, SafeWSTR(L"O")));
-	}
 
 	if(!pts) pts = new FontObject(0,0,40,9, SafeWSTR(L"Score: "), 0xFFFFFFFF, DT_LEFT);
 	
@@ -166,107 +160,109 @@ bool TestStage::Run()
 	}
 	refire-=elapsed;
 
+	if(spawnspeed<=0)
+	{
+		enemySetup(3);
+		spawnspeed+=750;
+	}
+	spawnspeed-=elapsed;
 
 	bulletFrame(); // Run the bullet Frame
-
+	enemyFrame(); // Run the enemy frame
 
 	//End bullet
 
 	//Test "hitbox"
 	if(player->MouseOver()) player->text_color=0xFFFF0000;
 	else player->text_color=0xFFFFFFFF;
-	
-	for(int i=0; i<os.size(); i++)
+
+	//Bullet hit detection
+	for(int k = 0 ; k<bullets.size(); k++)
 	{
-		if(player->pRect->left<os[i]->pRect->right
-			&& player->pRect->left>os[i]->pRect->left
-			&& player->pRect->top<os[i]->pRect->bottom
-			&& player->pRect->top>os[i]->pRect->top) 
+		for(int i = 0; i<enemies.size(); i++)
 		{
-			GameObjectRelease(os[i]);
-			os.erase(os.begin()+i);
-			i--;
-			score++;
-		}
-		else if(player->pRect->right>os[i]->pRect->left
-			&& player->pRect->right<os[i]->pRect->right
-			&& player->pRect->top<os[i]->pRect->bottom
-			&& player->pRect->top>os[i]->pRect->top) 
-		{
-			GameObjectRelease(os[i]);
-			os.erase(os.begin()+i);
-			score++;
-			i--;
-		}
-		else if(player->pRect->left<os[i]->pRect->right
-			&& player->pRect->left>os[i]->pRect->left
-			&& player->pRect->bottom>os[i]->pRect->top
-			&& player->pRect->bottom<os[i]->pRect->bottom) 
-		{
-			GameObjectRelease(os[i]);
-			os.erase(os.begin()+i);
-			score++;
-			i--;
-		}
-		else if(player->pRect->right>os[i]->pRect->left
-			&& player->pRect->right<os[i]->pRect->right
-			&& player->pRect->bottom>os[i]->pRect->top
-			&& player->pRect->bottom<os[i]->pRect->bottom) 
-		{
-			GameObjectRelease(os[i]);
-			os.erase(os.begin()+i);
-			score++;
-			i--;
+			if(bullets[k]->pBulletFont->pRect->left<enemies[i]->pEnemyFont->pRect->right
+			&& bullets[k]->pBulletFont->pRect->left>enemies[i]->pEnemyFont->pRect->left
+			&& bullets[k]->pBulletFont->pRect->top<enemies[i]->pEnemyFont->pRect->bottom
+			&& bullets[k]->pBulletFont->pRect->top>enemies[i]->pEnemyFont->pRect->top)
+			{
+				enemies[i]->health--;
+				enemies[i]->pEnemyFont->text_color-=0xFFFF/2;
+				if(enemies[i]->health==0)
+				{
+				GameObjectRelease(enemies[i]->pEnemyFont);
+				enemies.erase(enemies.begin()+i);
+				score++;
+				i--;
+				}
+				GameObjectRelease(bullets[k]->pBulletFont);
+				bullets.erase(bullets.begin()+k);
+				k--;
+				break;
+			}
+			else if(bullets[k]->pBulletFont->pRect->right>enemies[i]->pEnemyFont->pRect->left
+			&& bullets[k]->pBulletFont->pRect->right<enemies[i]->pEnemyFont->pRect->right
+			&& bullets[k]->pBulletFont->pRect->top<enemies[i]->pEnemyFont->pRect->bottom
+			&& bullets[k]->pBulletFont->pRect->top>enemies[i]->pEnemyFont->pRect->top) 
+			{
+				enemies[i]->health--;
+				enemies[i]->pEnemyFont->text_color-=0xFFFF/2;
+				if(enemies[i]->health==0)
+				{
+				GameObjectRelease(enemies[i]->pEnemyFont);
+				enemies.erase(enemies.begin()+i);
+				score++;
+				i--;
+				}
+				GameObjectRelease(bullets[k]->pBulletFont);
+				bullets.erase(bullets.begin()+k);
+				k--;
+				break;
+			}
+			else if(bullets[k]->pBulletFont->pRect->left<enemies[i]->pEnemyFont->pRect->right
+				&& bullets[k]->pBulletFont->pRect->left>enemies[i]->pEnemyFont->pRect->left
+				&& bullets[k]->pBulletFont->pRect->bottom>enemies[i]->pEnemyFont->pRect->top
+				&& bullets[k]->pBulletFont->pRect->bottom<enemies[i]->pEnemyFont->pRect->bottom) 
+			{
+				enemies[i]->health--;
+				enemies[i]->pEnemyFont->text_color-=0xFFFF/2;
+				if(enemies[i]->health==0)
+				{
+				GameObjectRelease(enemies[i]->pEnemyFont);
+				enemies.erase(enemies.begin()+i);
+				score++;
+				i--;
+				}
+				GameObjectRelease(bullets[k]->pBulletFont);
+				bullets.erase(bullets.begin()+k);
+				k--;
+				break;
+			}
+			else if(bullets[k]->pBulletFont->pRect->right>enemies[i]->pEnemyFont->pRect->left
+				&& bullets[k]->pBulletFont->pRect->right<enemies[i]->pEnemyFont->pRect->right
+				&& bullets[k]->pBulletFont->pRect->bottom>enemies[i]->pEnemyFont->pRect->top
+				&& bullets[k]->pBulletFont->pRect->bottom<enemies[i]->pEnemyFont->pRect->bottom) 
+			{
+				enemies[i]->health--;
+				enemies[i]->pEnemyFont->text_color-=0xFFFF/2;
+				if(enemies[i]->health==0)
+				{
+				GameObjectRelease(enemies[i]->pEnemyFont);
+				enemies.erase(enemies.begin()+i);
+				score++;
+				i--;
+				}
+				GameObjectRelease(bullets[k]->pBulletFont);
+				bullets.erase(bullets.begin()+k);
+				k--;
+				break;
+			}
 		}
 	}
 
-	for(int i=0; i<os.size(); i++)
-	{
-		for(int k =0 ; k<bullets.size(); k++)
-		{
-			if(bullets[k]->pBulletFont->pRect->left<os[i]->pRect->right
-			&& bullets[k]->pBulletFont->pRect->left>os[i]->pRect->left
-			&& bullets[k]->pBulletFont->pRect->top<os[i]->pRect->bottom
-			&& bullets[k]->pBulletFont->pRect->top>os[i]->pRect->top)
-			{
-				GameObjectRelease(os[i]);
-				os.erase(os.begin()+i);
-				score++;
-				i--;
-			}
-			else if(bullets[k]->pBulletFont->pRect->right>os[i]->pRect->left
-			&& bullets[k]->pBulletFont->pRect->right<os[i]->pRect->right
-			&& bullets[k]->pBulletFont->pRect->top<os[i]->pRect->bottom
-			&& bullets[k]->pBulletFont->pRect->top>os[i]->pRect->top) 
-			{
-				GameObjectRelease(os[i]);
-				os.erase(os.begin()+i);
-				score++;
-				i--;
-			}
-			else if(bullets[k]->pBulletFont->pRect->left<os[i]->pRect->right
-				&& bullets[k]->pBulletFont->pRect->left>os[i]->pRect->left
-				&& bullets[k]->pBulletFont->pRect->bottom>os[i]->pRect->top
-				&& bullets[k]->pBulletFont->pRect->bottom<os[i]->pRect->bottom) 
-			{
-				GameObjectRelease(os[i]);
-				os.erase(os.begin()+i);
-				score++;
-				i--;
-			}
-			else if(bullets[k]->pBulletFont->pRect->right>os[i]->pRect->left
-				&& bullets[k]->pBulletFont->pRect->right<os[i]->pRect->right
-				&& bullets[k]->pBulletFont->pRect->bottom>os[i]->pRect->top
-				&& bullets[k]->pBulletFont->pRect->bottom<os[i]->pRect->bottom) 
-			{
-				GameObjectRelease(os[i]);
-				os.erase(os.begin()+i);
-				score++;
-				i--;
-			}
-		}
-	}
-	for(int i=0; i<os.size(); i++) os[i]->Display();
+
+
+	for(int i=0; i<enemies.size(); i++) enemies[i]->pEnemyFont->Display();
 	for(int i=0; i<bullets.size(); i++) bullets[i]->pBulletFont->Display();
 	player->Display();
 	//end test code
@@ -277,6 +273,130 @@ bool TestStage::Run()
 void TestStage::SetElapsedTime(int time)
 {
 	elapsed=time;
+}
+
+//Enemy Stuff
+
+void TestStage::enemySetup(int health)
+{
+	enemy* pNewEnemy = new enemy();
+	pNewEnemy->health=health;
+
+	pNewEnemy->xbuffer=0;
+	pNewEnemy->ybuffer=0;
+
+	pNewEnemy->speed=1;
+
+	int side = rand()%4;
+
+	int x;
+	int y;
+
+	switch (side)
+	{
+	case 0:
+		x=0;
+		y=rand()%(*pScreenY-10)+5;
+		break;
+	case 1:
+		x=*pScreenX;
+		y=rand()%(*pScreenY-10)+5;
+		break;
+	case 2:
+		x=rand()%(*pScreenX-10)+5;
+		y=0;
+		break;
+	case 3:
+		x=rand()%(*pScreenX-10)+5;
+		y=*pScreenY;
+		break;
+	}
+
+	pNewEnemy->pEnemyFont = new FontObject(x-5, y-5, x+5, y+9, SafeWSTR(L"O"));
+	enemies.push_back(pNewEnemy);
+}
+
+bool TestStage::enemyRelease(enemy* pEnemy)
+{
+			GameObjectRelease(pEnemy->pEnemyFont);
+			delete pEnemy;
+			return true;
+};
+
+void TestStage::enemyFrame()
+{
+	int centplayerX = (player->pRect->left+player->pRect->right)/2;
+	int centplayerY = (player->pRect->top+player->pRect->bottom)/2;
+
+	for(int i=0; i<enemies.size(); i++)
+	{
+		int centenemyX = (enemies[i]->pEnemyFont->pRect->left+player->pRect->right)/2;
+		int centenemyY = (enemies[i]->pEnemyFont->pRect->top+player->pRect->bottom)/2;
+
+		int xline=centplayerX-centenemyX;
+		int yline=centplayerY-centenemyY;
+
+		if((abs(xline)<5) && (abs(yline)<5))
+		{
+			enemyRelease(enemies[i]);
+			enemies.erase(enemies.begin()+i);
+			continue;
+		}
+
+		double sline=sqrt((double)((xline*xline)+(yline*yline)));
+			
+		enemies[i]->xratio=enemies[i]->speed*(xline/sline);
+		enemies[i]->yratio=enemies[i]->speed*(yline/sline);
+
+		//Enemy Movement
+		int xmove=0;
+		int ymove=0;
+
+		enemies[i]->xbuffer+=enemies[i]->speed*enemies[i]->xratio;
+		enemies[i]->ybuffer+=enemies[i]->speed*enemies[i]->yratio;
+
+		if(enemies[i]->xbuffer>0)
+		{
+			while(enemies[i]->xbuffer>=1)
+			{
+				enemies[i]->xbuffer-=1;
+				xmove+=1;
+			}
+			enemies[i]->pEnemyFont->MoveX(xmove);
+			xmove=0;
+		}
+		else
+		{
+			while(enemies[i]->xbuffer<=-1)
+			{
+				enemies[i]->xbuffer+=1;
+				xmove-=1;
+			}
+			enemies[i]->pEnemyFont->MoveX(xmove);
+			xmove=0;
+		}
+
+		if(enemies[i]->yratio>0)
+		{
+			while(enemies[i]->ybuffer>=1)
+			{
+				enemies[i]->ybuffer-=1;
+				ymove+=1;
+			}
+			enemies[i]->pEnemyFont->MoveY(ymove);
+			ymove=0;
+		}
+		else
+		{
+			while(enemies[i]->ybuffer<=-1)
+			{
+				enemies[i]->ybuffer+=1;
+				ymove-=1;
+			}
+			enemies[i]->pEnemyFont->MoveY(ymove);
+			ymove=0;
+		}
+	}
 }
 
 //Bullet Stuff
