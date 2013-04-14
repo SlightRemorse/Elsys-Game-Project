@@ -195,8 +195,7 @@ bool GraphicsClass::ResetDevice(bool fullscr, int screenWidth, int screenHeight)
 	// Reset device and check for errors.
 	hresult=pDX9_device->Reset(&DX9pp);
 
-	pDX_Fonts = new DXFonts(pDX9_device);
-	pDX_Fonts->SetFont(L"Arial", 20); //Loading Default 20px Arial font
+	pDX_Fonts->pD3DX_font->OnResetDevice(); //re-acquire resources for pDX_Fonts when changing resolution, etc.
 
 	if(FAILED(hresult)) 
 	{

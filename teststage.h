@@ -31,6 +31,7 @@ public:
 
 	int stage;
 
+	void OnResize();
 	bool Run();
 	bool Menu();
 };

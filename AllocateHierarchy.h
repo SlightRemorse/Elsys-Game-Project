@@ -8,6 +8,9 @@
 #pragma comment (lib, "d3dx9.lib")
 
 //Allocate Hierarchy Class
+#include "ModelStructs.h"
+#include "typeconv.h"
+
 class AllocateHierarchy: public ID3DXAllocateHierarchy
 {
 public:

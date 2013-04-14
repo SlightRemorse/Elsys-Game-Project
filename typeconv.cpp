@@ -83,3 +83,12 @@ LPWSTR SafeWSTR(LPCWSTR input) // Creates a safe WSTR that can be easily deleted
 
 	return output;
 }
+
+LPWSTR CharSTRToLPWSTR(char* string)
+{
+	int len = 0;
+	len = (int)strlen(string) + 1;
+	wchar_t *wString = new wchar_t[len];
+	mbstowcs(wString, string, len);
+	return wString;
+}
