@@ -92,6 +92,11 @@ int xspeed=0;
 int yspeed=0;
 double yratio=0;
 double xratio=0;
+int xbuffer = 0;
+int xmove = 0;
+int ybuffer = 0;
+int ymove = 0;
+int wspeed=5;
 
 bool TestStage::Run()
 {
@@ -123,8 +128,10 @@ bool TestStage::Run()
 		{
 			int a=player->pRect->left-pMainInput->MGetX();
 			int b=pMainInput->MGetY()-player->pRect->bottom;
-			yratio=-a/b;
-			xratio=-1;
+			double c=sqrt((double)((a*a)+(b*b)));
+			
+			xratio=wspeed*(a/c);
+			yratio=wspeed*(b/c);
 			if(!bullet)bullet=new FontObject(player->pRect->left, player->pRect->bottom,player->pRect->left-3, player->pRect->bottom+3, SafeWSTR(L"."));
 		
 		}
@@ -132,9 +139,10 @@ bool TestStage::Run()
 		{
 			int a=pMainInput->MGetX()-player->pRect->left;
 			int b=pMainInput->MGetY()-player->pRect->bottom;
-			//xratio 1 po default (na 1 x kolko y otgovorq v slucheq)
-			yratio=a/b;
-			xratio=1;
+			double c=sqrt((double)((a*a)+(b*b)));
+
+			xratio=wspeed*(a/c);
+			yratio=wspeed*(b/c);
 			if(!bullet)bullet=new FontObject(player->pRect->right, player->pRect->bottom, player->pRect->right+3, player->pRect->bottom+3, SafeWSTR(L"."));
 
 		}
@@ -142,8 +150,10 @@ bool TestStage::Run()
 		{
 			int a=player->pRect->left-pMainInput->MGetX();
 			int b=player->pRect->top-pMainInput->MGetY();
-			yratio=a/b;
-			xratio=-1;
+			double c=sqrt((double)((a*a)+(b*b)));
+
+			xratio=wspeed*(a/c);
+			yratio=wspeed*(b/c);
 			if(!bullet) bullet = new FontObject(player->pRect->left, player->pRect->top, player->pRect->left-3, player->pRect->top-3, SafeWSTR(L"."));
 			
 		}
@@ -151,8 +161,10 @@ bool TestStage::Run()
 		{
 			int a=pMainInput->MGetX()-player->pRect->right;
 			int b=player->pRect->top-pMainInput->MGetY();
-			yratio=-a/b;
-			xratio=1;
+			double c=sqrt((double)((a*a)+(b*b)));
+
+			xratio=wspeed*(a/c);
+			yratio=wspeed*(b/c);
 			if(!bullet)bullet= new FontObject(player->pRect->right, player->pRect->top, player->pRect->right+3, player->pRect->top-3, SafeWSTR(L"."));
 			
 		}
@@ -183,11 +195,69 @@ bool TestStage::Run()
 	if(player->pRect->bottom>*pScreenY+1) player->MoveY(-(player->pRect->top));
 
 	//test move bullet
-	int bigx=xratio*100;
-	int bigy=xratio*yratio*100;
-	if(bullet) bullet->MoveX(bigx);
-	if(bullet) bullet->MoveY(bigy);
 	
+	while(bullet)
+	{
+		xmove = 0;
+		xbuffer+=xratio;
+		ymove = 0;
+		ybuffer += yratio;
+		if(xbuffer>0)
+		{
+			while(xbuffer>=1)
+			{
+				xbuffer-=1;
+				xmove+=1;
+			}
+			bullet->MoveX(xmove);
+		}
+		else
+		{
+			while(xbuffer<=-1)
+			{
+				xbuffer+=1;
+				xmove-=1;
+			}
+			bullet->MoveX(xmove);
+		}
+		if(yratio>0)
+		{
+			while(ybuffer>=1)
+			{
+				ybuffer-=1;
+				ymove+=1;
+			}
+			bullet->MoveY(ymove);
+		}
+		else
+		{
+			while(ybuffer<=-1)
+			{
+				ybuffer+=1;
+				ymove-=1;
+			}
+			bullet->MoveY(ymove);
+		}
+
+	}
+	//delete bullet
+	if(bullet->pRect->top<0)
+	{	
+		GameObjectRelease(bullet);
+	}
+	else if(bullet->pRect->bottom > *pScreenX)
+	{	
+		GameObjectRelease(bullet);
+	}
+	else if(bullet->pRect->left < 0)
+	{	
+		GameObjectRelease(bullet);
+	}
+	else if(bullet->pRect->right > *pScreenY)
+	{	
+		GameObjectRelease(bullet);
+	}
+
 	//Test "hitbox"
 	if(player->MouseOver()) player->text_color=0xFFFF0000;
 	else player->text_color=0xFFFFFFFF;
