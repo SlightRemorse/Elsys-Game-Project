@@ -92,6 +92,7 @@ int xspeed=0;
 int yspeed=0;
 double yratio=0;
 double xratio=0;
+
 bool TestStage::Run()
 {
 	if(pMainInput->IsKeyDown(VK_ESCAPE)) 
@@ -99,7 +100,7 @@ bool TestStage::Run()
 			stage = 0;
 			player->Hide();
 			for(int i=0; i<os.size(); i++) os[i]->Hide();
-			bullet->Hide();
+			if(bullet)bullet->Hide();
 			return true;
 	}
 	//test code
@@ -111,7 +112,12 @@ bool TestStage::Run()
 			int y=rand()%(*pScreenY-10)+5;
 			os.push_back(new FontObject(x-5, y-5, x+5, y+9, SafeWSTR(L"O")));
 	}
-	if(pMainInput->IsKeyDown(VK_LBUTTON))
+	if(pMainInput->IsMKeyClick(2)) 
+	{
+		GameObjectRelease(bullet);
+		}
+
+	if(pMainInput->IsMKeyClick(1))
 	{
 		if(pMainInput->MGetX()<player->pRect->left && pMainInput->MGetY()>player->pRect->top)
 		{
@@ -138,7 +144,7 @@ bool TestStage::Run()
 			double b=player->pRect->top-pMainInput->MGetY();
 			yratio=-a/b;
 			xratio=-1;
-			if(!bullet)bullet= new FontObject(player->pRect->left, player->pRect->top, player->pRect->top-3, player->pRect->left-3, SafeWSTR(L"."));
+			if(!bullet) bullet = new FontObject(player->pRect->left, player->pRect->top, player->pRect->top-3, player->pRect->left-3, SafeWSTR(L"."));
 			
 		}
 		else if(pMainInput->MGetX()>player->pRect->left && pMainInput->MGetY()<player->pRect->top)
@@ -175,8 +181,9 @@ bool TestStage::Run()
 	if(player->pRect->bottom>*pScreenY+1) player->MoveY(-(player->pRect->top));
 
 	//test move bullet
-	bullet->MoveX(xratio);
-	bullet->MoveY(yratio);
+	if(bullet) bullet->MoveX(xratio);
+	if(bullet) bullet->MoveY(yratio);
+	
 	//Test "hitbox"
 	if(player->MouseOver()) player->text_color=0xFFFF0000;
 	else player->text_color=0xFFFFFFFF;
@@ -227,7 +234,8 @@ bool TestStage::Run()
 
 	for(int i=0; i<os.size(); i++) os[i]->Display();
 	player->Display();
-	bullet->Display();
+	if(bullet) bullet->Display();
 	//end test code
+	
 	return true;
 }
