@@ -196,7 +196,7 @@ bool TestStage::Run()
 	{
 		if(refire<=0) 
 		{
-				bulletSetup(5);
+				bulletSetup(8);
 				refire=125;
 		}
 	}
@@ -360,7 +360,7 @@ void TestStage::enemySetup(int health)
 	pNewEnemy->xbuffer=0;
 	pNewEnemy->ybuffer=0;
 
-	pNewEnemy->speed=1;
+	pNewEnemy->speed=1.2;
 
 	int side = rand()%4;
 

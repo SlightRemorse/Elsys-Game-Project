@@ -94,7 +94,7 @@ struct gore: basefont
 struct enemy: basefont
 {
 	int health;
-	int speed;
+	double speed;
 };
 //End Enemy struct
 
