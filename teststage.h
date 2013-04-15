@@ -4,6 +4,7 @@
 
 //Includes
 #include <vector>
+#include <time.h>
 
 //Test Stage Class
 #include "objectwrapper.h"
@@ -19,7 +20,9 @@ class TestStage
 	FontObject* exit;
 	FontObject* play;
 	FontObject* options;
+	FontObject* above_message;
 
+	int gamestate;
 	int elapsed;
 	
 public:
@@ -37,6 +40,8 @@ public:
 	void OnResize();
 	bool Run();
 	bool Menu();
+
+private:
 
 	std::vector<struct bullet*> bullets;
 	std::vector<struct enemy*> enemies;

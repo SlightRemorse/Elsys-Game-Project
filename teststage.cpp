@@ -4,6 +4,8 @@
 //Constructor
 TestStage::TestStage(GraphicsClass* pGraphics, InputClass* pInput, int* screenwidth, int* screenheight)
 {
+	srand(time(0));
+
 	pMainGraphics=pGraphics; // getting the current Graphics Class we're using
 	pMainInput=pInput; // getting the current Input Class we're using
 
@@ -15,6 +17,9 @@ TestStage::TestStage(GraphicsClass* pGraphics, InputClass* pInput, int* screenwi
 	options = 0;
 	exit = 0;
 	play = 0;
+	above_message = 0;
+
+	gamestate=0; // Not started the game
 
 	stage = 0; // 0 Menu, 1 Run
 
@@ -33,12 +38,17 @@ TestStage::~TestStage()
 void TestStage::OnResize()
 {
 	GameObjectRelease(play);
-	if(!play) play = new FontObject(*pScreenX/2-18, *pScreenY/2-40, *pScreenX/2+18, *pScreenY/2-20, SafeWSTR(L"Play"));
+	if(!play) 
+	{
+	if(gamestate==1) play = new FontObject(*pScreenX/2-30, *pScreenY/2-40, *pScreenX/2+30, *pScreenY/2-20, SafeWSTR(L"Resume"));
+	else play = new FontObject(*pScreenX/2-18, *pScreenY/2-40, *pScreenX/2+18, *pScreenY/2-20, SafeWSTR(L"Play"));
+	}
 	GameObjectRelease(options);
 	if(!options) options = new FontObject(*pScreenX/2-25, *pScreenY/2-20, *pScreenX/2+25, *pScreenY/2, SafeWSTR(L"Options"));
 	GameObjectRelease(exit);
 	if(!exit) exit = new FontObject(*pScreenX/2-18, *pScreenY/2, *pScreenX/2+18, *pScreenY/2+20, SafeWSTR(L"Exit"));
-
+	//Above message here
+	//Make it
 	if(stage!=0)
 	{
 		play->Hide();
@@ -60,6 +70,7 @@ bool TestStage::Menu()
 	play->Display();
 	options->Display();
 	exit->Display();
+	if(above_message) above_message->Display();
 
 	if(exit->Click()) return false;
 
@@ -91,6 +102,21 @@ bool TestStage::Menu()
 			play->Hide();
 			options->Hide();
 			exit->Hide();
+			if(above_message) above_message->Hide();
+
+			if(gamestate!=1)
+			{
+			gamestate=1;
+
+			if(!above_message) above_message = new FontObject(*pScreenX/2-30, *pScreenY/2-70, *pScreenX/2+30, *pScreenY/2-50, SafeWSTR(L"Paused"));
+			above_message->Hide();
+
+			delete play->text_str;
+			play->text_str=SafeWSTR(L"Resume");
+
+			play->pRect->left-=12;
+			play->pRect->right+=12;
+			}
 			return true;
 	}
 
@@ -118,6 +144,7 @@ bool TestStage::Run()
 			player->Hide();
 			for(int i=0; i<enemies.size(); i++) enemies[i]->pFontObject->Hide();
 			for(int i=0; i<bullets.size(); i++) bullets[i]->pFontObject->Hide();
+			for(int i=0; i<explosion.size(); i++) explosion[i]->pFontObject->Hide();
 			return true;
 	}
 	//test code
@@ -265,6 +292,7 @@ bool TestStage::Run()
 
 	for(int i=0; i<enemies.size(); i++) enemies[i]->pFontObject->Display();
 	for(int i=0; i<bullets.size(); i++) bullets[i]->pFontObject->Display();
+	for(int i=0; i<explosion.size(); i++) explosion[i]->pFontObject->Display();
 	player->Display();
 	//end test code
 	
@@ -275,6 +303,8 @@ void TestStage::SetElapsedTime(int time)
 {
 	elapsed=time;
 }
+
+
 
 //Enemy Stuff
 
