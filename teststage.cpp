@@ -190,10 +190,10 @@ bool TestStage::Run()
 	yspeed=0;
 	
 
-	if(player->pRect->left<0) player->MoveX(*pScreenX-player->pRect->right);
-	if(player->pRect->right>*pScreenX) player->MoveX(-(player->pRect->left));
-	if(player->pRect->top<0) player->MoveY(*pScreenY-player->pRect->bottom);
-	if(player->pRect->bottom>*pScreenY+1) player->MoveY(-(player->pRect->top));
+	if(player->pRect->left<0) player->MoveX(4);
+	if(player->pRect->right>*pScreenX) player->MoveX(-4);
+	if(player->pRect->top<0) player->MoveY(4);
+	if(player->pRect->bottom>*pScreenY+1) player->MoveY(-4);
 
 	//test move bullet
 	
