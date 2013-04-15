@@ -40,6 +40,11 @@ public:
 
 	std::vector<struct bullet*> bullets;
 	std::vector<struct enemy*> enemies;
+	std::vector<struct gore*> explosion;
+
+	void explosionSetup(int, int, int);
+	bool explosionRelease(struct gore*);
+	void explosionFrame();
 
 	void enemySetup(int);
 	bool enemyRelease(struct enemy*);
@@ -55,33 +60,35 @@ public:
 };
 //End Test Stage Class
 
-//Enemy struct
-struct enemy
+//Base Font Object struct
+struct basefont
 {
-	FontObject* pEnemyFont;
+	FontObject* pFontObject;
 
 	double yratio;
 	double xratio;
 
 	double xbuffer;
 	double ybuffer;
+};
 
+//"Gore" struct
+struct gore: basefont
+{
+	int lifetime;
+};
+
+//Enemy struct
+struct enemy: basefont
+{
 	int health;
 	int speed;
 };
 //End Enemy struct
 
 //Test Bullet struct
-struct bullet
+struct bullet: basefont
 {
-	FontObject* pBulletFont;
-
-	double yratio;
-	double xratio;
-
-	double xbuffer;
-	double ybuffer;
-
 	int wspeed;
 };
 //End Test struct
