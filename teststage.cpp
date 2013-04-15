@@ -117,6 +117,9 @@ bool TestStage::Menu()
 			play->Hide();
 			options->Hide();
 			exit->Hide();
+			
+			xspeed=0;
+			yspeed=0;
 
 			if(pts) pts->Display();
 
@@ -147,14 +150,6 @@ bool TestStage::Menu()
 }
 
 
-//test ptrs
-
-
-int xspeed;
-int yspeed;
-
-
-
 bool TestStage::Run()
 {
 	if(pMainInput->IsKeyDown(VK_ESCAPE)) 
@@ -176,10 +171,10 @@ bool TestStage::Run()
 	delete pts->text_str;
 	pts->text_str = JoinWSTR(true, SafeWSTR(L"Score: "), IntToWSTR(score));
 
-	if(pMainInput->IsKeyDown(VK_UP)) yspeed-=3;
-	if(pMainInput->IsKeyDown(VK_DOWN)) yspeed+=3;
-	if(pMainInput->IsKeyDown(VK_LEFT)) xspeed-=3;
-	if(pMainInput->IsKeyDown(VK_RIGHT)) xspeed+=3;
+	if(pMainInput->IsKeyDown(VK_UP)) yspeed-=1;
+	if(pMainInput->IsKeyDown(VK_DOWN)) yspeed+=1;
+	if(pMainInput->IsKeyDown(VK_LEFT)) xspeed-=1;
+	if(pMainInput->IsKeyDown(VK_RIGHT)) xspeed+=1;
 
 	
 	player->MoveX(xspeed);
@@ -190,10 +185,10 @@ bool TestStage::Run()
 	yspeed=0;
 	
 
-	if(player->pRect->left<0) player->MoveX(4);
-	if(player->pRect->right>*pScreenX) player->MoveX(-4);
-	if(player->pRect->top<0) player->MoveY(4);
-	if(player->pRect->bottom>*pScreenY+1) player->MoveY(-4);
+	if(player->pRect->left<0) player->MoveX(1);
+	if(player->pRect->right>*pScreenX) player->MoveX(-1);
+	if(player->pRect->top<0) player->MoveY(1);
+	if(player->pRect->bottom>*pScreenY+1) player->MoveY(-1);
 
 	//test move bullet
 	

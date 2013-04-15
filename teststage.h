@@ -28,6 +28,9 @@ class TestStage
 	int gamestate;
 	int elapsed;
 	
+	int xspeed;
+	int yspeed;
+
 public:
 
 	TestStage(GraphicsClass*, InputClass*, int*, int*);
