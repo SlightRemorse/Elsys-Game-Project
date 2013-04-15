@@ -20,7 +20,7 @@ TestStage::TestStage(GraphicsClass* pGraphics, InputClass* pInput, int* screenwi
 	above_message = 0;
 	player=0;
 	pts=0;
-
+	powerup=0;
 
 	score=0;
 
@@ -75,6 +75,7 @@ void TestStage::OnResize()
 bool up=false;
 bool TestStage::Menu()
 {
+
 	//Initialize the stage's objects
 	if(!play) play = new FontObject(*pScreenX/2-18, *pScreenY/2-40, *pScreenX/2+18, *pScreenY/2-20, SafeWSTR(L"Play"));
 	if(!options) options = new FontObject(*pScreenX/2-25, *pScreenY/2-20, *pScreenX/2+25, *pScreenY/2, SafeWSTR(L"Options"));
@@ -255,6 +256,8 @@ bool TestStage::Run()
 			&& bullets[k]->pFontObject->pRect->top>enemies[i]->pFontObject->pRect->top)
 			{
 				enemies[i]->health--;
+				enemies[i]->xbuffer+=bullets[k]->xratio*0.35;
+				enemies[i]->ybuffer+=bullets[k]->yratio*0.35;
 				enemies[i]->pFontObject->text_color-=0xFFFF/2;
 				if(enemies[i]->health==0)
 				{
@@ -275,6 +278,8 @@ bool TestStage::Run()
 			&& bullets[k]->pFontObject->pRect->top>enemies[i]->pFontObject->pRect->top) 
 			{
 				enemies[i]->health--;
+				enemies[i]->xbuffer+=bullets[k]->xratio*0.35;
+				enemies[i]->ybuffer+=bullets[k]->yratio*0.35;
 				enemies[i]->pFontObject->text_color-=0xFFFF/2;
 				if(enemies[i]->health==0)
 				{
@@ -295,6 +300,8 @@ bool TestStage::Run()
 				&& bullets[k]->pFontObject->pRect->bottom<enemies[i]->pFontObject->pRect->bottom) 
 			{
 				enemies[i]->health--;
+				enemies[i]->xbuffer+=bullets[k]->xratio*0.35;
+				enemies[i]->ybuffer+=bullets[k]->yratio*0.35;
 				enemies[i]->pFontObject->text_color-=0xFFFF/2;
 				if(enemies[i]->health==0)
 				{
@@ -315,6 +322,8 @@ bool TestStage::Run()
 				&& bullets[k]->pFontObject->pRect->bottom<enemies[i]->pFontObject->pRect->bottom) 
 			{
 				enemies[i]->health--;
+				enemies[i]->xbuffer+=bullets[k]->xratio*0.35;
+				enemies[i]->ybuffer+=bullets[k]->yratio*0.35;
 				enemies[i]->pFontObject->text_color-=0xFFFF/2;
 				if(enemies[i]->health==0)
 				{
@@ -690,4 +699,17 @@ void TestStage::explosionFrame()
 			ymove=0;
 		}
 	}
+}
+
+// bonus setUp
+
+void TestStage::bonusSetup()
+{
+	bonus* pNewBonus= new bonus();
+	pNewBonus->xcoord=rand()%(*pScreenX-5)+10;
+	pNewBonus->ycoord=rand()%(*pScreenY-5)+10;
+	
+	pNewBonus->pFontObject = new FontObject(pNewBonus->xcoord-5, pNewBonus->ycoord-5, pNewBonus->xcoord+5, pNewBonus->xcoord+9, SafeWSTR(L"P"));
+	
+	powerup = pNewBonus;
 }
