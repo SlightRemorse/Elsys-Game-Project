@@ -22,6 +22,9 @@ class TestStage
 	FontObject* options;
 	FontObject* above_message;
 
+	FontObject* pts;
+	FontObject* player;
+
 	int gamestate;
 	int elapsed;
 	
@@ -46,7 +49,6 @@ private:
 	std::vector<struct bullet*> bullets;
 	std::vector<struct enemy*> enemies;
 	std::vector<struct gore*> explosion;
-	FontObject* player;
 
 	void explosionSetup(int, int, int);
 	bool explosionRelease(struct gore*);

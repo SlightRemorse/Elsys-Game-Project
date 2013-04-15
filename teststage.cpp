@@ -18,6 +18,11 @@ TestStage::TestStage(GraphicsClass* pGraphics, InputClass* pInput, int* screenwi
 	exit = 0;
 	play = 0;
 	above_message = 0;
+	player=0;
+	pts=0;
+
+
+	score=0;
 
 	gamestate=0; // Not started the game
 
@@ -41,7 +46,7 @@ void TestStage::OnResize()
 	if(!play) 
 	{
 	if(gamestate==1) play = new FontObject(*pScreenX/2-30, *pScreenY/2-40, *pScreenX/2+30, *pScreenY/2-20, SafeWSTR(L"Resume"));
-	else if(gamestate==2) play = new FontObject(*pScreenX/2-30, *pScreenY/2-40, *pScreenX/2+30, *pScreenY/2-20, SafeWSTR(L"New Game"));
+	else if(gamestate==2) play = new FontObject(*pScreenX/2-35, *pScreenY/2-40, *pScreenX/2+35, *pScreenY/2-20, SafeWSTR(L"New Game"));
 	else play = new FontObject(*pScreenX/2-18, *pScreenY/2-40, *pScreenX/2+18, *pScreenY/2-20, SafeWSTR(L"Play"));
 	}
 	GameObjectRelease(options);
@@ -99,20 +104,22 @@ bool TestStage::Menu()
 	{
 			
 			stage = 1;
-			playerhealth=5;
+			playerhealth=2;
 			//Hidding all the objects, but keeping their information
 			play->Hide();
 			options->Hide();
 			exit->Hide();
-			player=0;
-			score=0;
+
+			if(pts) pts->Display();
+
 			if(above_message) above_message->Hide();
 
 			if(gamestate!=1)
 			{
 			gamestate=1;
 
-			if(!above_message) above_message = new FontObject(*pScreenX/2-30, *pScreenY/2-70, *pScreenX/2+30, *pScreenY/2-50, SafeWSTR(L"Paused"));
+			if(above_message) GameObjectRelease(above_message);
+			above_message = new FontObject(*pScreenX/2-30, *pScreenY/2-70, *pScreenX/2+30, *pScreenY/2-50, SafeWSTR(L"Paused"));
 			above_message->Hide();
 
 			delete play->text_str;
@@ -121,34 +128,7 @@ bool TestStage::Menu()
 			play->pRect->left-=12;
 			play->pRect->right+=12;
 			}
-			if(gamestate==2)
-			{
-				stage =0;
-				gamestate=1;
-				if(!above_message) above_message = new FontObject(*pScreenX/2-30, *pScreenY/2-70, *pScreenX/2+30, *pScreenY/2-50, SafeWSTR(L"Game Over!"));
-				above_message->Display();
 
-				delete play->text_str;
-				play->text_str=SafeWSTR(L"New Game");
-
-				play->pRect->left-=12;
-				play->pRect->right+=12;
-
-				player->Hide();
-				for(int i=0 ; i<bullets.size(); i++)
-				{
-					GameObjectRelease(bullets[i]->pFontObject);
-					delete bullets[i];
-				}
-				for (int i=0; i<enemies.size() ; i++)
-				{
-					GameObjectRelease(enemies[i]->pFontObject);
-					delete enemies[i];
-				}
-				score=0;
-				playerhealth=5;
-				player->text_color=0xFF00FF00;
-			}
 			return true;
 	}
 
@@ -165,7 +145,7 @@ bool TestStage::Menu()
 int xspeed;
 int yspeed;
 
-FontObject* pts = 0;
+
 
 bool TestStage::Run()
 {
@@ -176,6 +156,7 @@ bool TestStage::Run()
 			for(int i=0; i<enemies.size(); i++) enemies[i]->pFontObject->Hide();
 			for(int i=0; i<bullets.size(); i++) bullets[i]->pFontObject->Hide();
 			for(int i=0; i<explosion.size(); i++) explosion[i]->pFontObject->Hide();
+			if(pts) pts->Hide();
 			return true;
 	}
 	//test code
@@ -229,67 +210,36 @@ bool TestStage::Run()
 	enemyFrame(); // Run the enemy frame
 	explosionFrame(); // Run the gore/explosion frame
 
-	//End bullet
+	if(playerhealth==0)
+	{
+		stage = 0;
+		gamestate=2;
+		if(above_message) GameObjectRelease(above_message);
+		above_message = new FontObject(*pScreenX/2-40, *pScreenY/2-70, *pScreenX/2+40, *pScreenY/2-50, SafeWSTR(L"Game Over!"));
+				
+		above_message->Display();
 
-	//enemy detection
-	for(int i = 0; i<enemies.size(); i++)
+		delete play->text_str;
+		play->text_str=SafeWSTR(L"New Game");
+
+		play->pRect->left-=12;
+		play->pRect->right+=12;
+
+		GameObjectRelease(player);
+		for(int i=0 ; i<bullets.size(); i++)
 		{
-			if(player->pRect->left<enemies[i]->pFontObject->pRect->right
-			&& player->pRect->left>enemies[i]->pFontObject->pRect->left
-			&& player->pRect->top<enemies[i]->pFontObject->pRect->bottom
-			&& player->pRect->top>enemies[i]->pFontObject->pRect->top)
-			{
-				playerhealth--;
-				player->text_color-=0xFFFF/2;
-				if(playerhealth==0)
-				{
-				explosionSetup(player->pRect->left, player->pRect->top, 2);
-				gamestate=2;
-				}
-				
-			}
-			else if(player->pRect->right>enemies[i]->pFontObject->pRect->left
-			&& player->pRect->right<enemies[i]->pFontObject->pRect->right
-			&& player->pRect->top<enemies[i]->pFontObject->pRect->bottom
-			&& player->pRect->top>enemies[i]->pFontObject->pRect->top) 
-			{
-				playerhealth--;
-				player->text_color-=0xFFFF/2;
-				if(playerhealth==0)
-				{
-				explosionSetup(player->pRect->left, player->pRect->top, 2);
-				gamestate=2;
-				}
-				
-			}
-			else if(player->pRect->left<enemies[i]->pFontObject->pRect->right
-				&& player->pRect->left>enemies[i]->pFontObject->pRect->left
-				&& player->pRect->bottom>enemies[i]->pFontObject->pRect->top
-				&& player->pRect->bottom<enemies[i]->pFontObject->pRect->bottom) 
-			{
-				playerhealth--;
-				player->text_color-=0xFFFF/2;
-				if(playerhealth==0)
-				{
-				explosionSetup(player->pRect->left, player->pRect->top, 2);
-				gamestate=2;
-				}
-			}
-			else if(player->pRect->right>enemies[i]->pFontObject->pRect->left
-				&& player->pRect->right<enemies[i]->pFontObject->pRect->right
-				&& player->pRect->bottom>enemies[i]->pFontObject->pRect->top
-				&& player->pRect->bottom<enemies[i]->pFontObject->pRect->bottom) 
-			{
-				playerhealth--;
-				player->text_color-=0xFFFF/2;
-				if(playerhealth==0)
-				{
-				explosionSetup(player->pRect->left, player->pRect->top, 2);
-				gamestate=2;
-				}	
-			}
+			GameObjectRelease(bullets[i]->pFontObject);
 		}
-	//end enemy detection
+		bullets.clear();
+		for (int i=0; i<enemies.size() ; i++)
+		{
+			GameObjectRelease(enemies[i]->pFontObject);
+		}
+		enemies.clear();
+		score=0;
+
+		return true;
+	}
 
 	//Bullet hit detection
 	for(int k = 0 ; k<bullets.size(); k++)
@@ -460,6 +410,10 @@ void TestStage::enemyFrame()
 
 		if((abs(xline)<5) && (abs(yline)<5))
 		{
+			playerhealth--;
+			player->text_color+=0xAA0000;
+			player->text_color-=0x00AA00;
+
 			enemyRelease(enemies[i]);
 			enemies.erase(enemies.begin()+i);
 			continue;
