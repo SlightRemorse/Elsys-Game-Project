@@ -46,15 +46,23 @@ void TestStage::OnResize()
 	if(!play) 
 	{
 	if(gamestate==1) play = new FontObject(*pScreenX/2-30, *pScreenY/2-40, *pScreenX/2+30, *pScreenY/2-20, SafeWSTR(L"Resume"));
-	else if(gamestate==2) play = new FontObject(*pScreenX/2-35, *pScreenY/2-40, *pScreenX/2+35, *pScreenY/2-20, SafeWSTR(L"New Game"));
+	else if(gamestate==2) play = new FontObject(*pScreenX/2-40, *pScreenY/2-40, *pScreenX/2+40, *pScreenY/2-20, SafeWSTR(L"New Game"));
 	else play = new FontObject(*pScreenX/2-18, *pScreenY/2-40, *pScreenX/2+18, *pScreenY/2-20, SafeWSTR(L"Play"));
 	}
 	GameObjectRelease(options);
 	if(!options) options = new FontObject(*pScreenX/2-25, *pScreenY/2-20, *pScreenX/2+25, *pScreenY/2, SafeWSTR(L"Options"));
 	GameObjectRelease(exit);
 	if(!exit) exit = new FontObject(*pScreenX/2-18, *pScreenY/2, *pScreenX/2+18, *pScreenY/2+20, SafeWSTR(L"Exit"));
-	//Above message here
-	//Make it
+	if(above_message) GameObjectRelease(above_message);
+	if(gamestate==1) 
+	{
+		above_message = new FontObject(*pScreenX/2-30, *pScreenY/2-70, *pScreenX/2+30, *pScreenY/2-50, SafeWSTR(L"Paused"));
+		above_message->Hide();
+	}
+	if(gamestate==2)
+	{
+		above_message = new FontObject(*pScreenX/2-40, *pScreenY/2-70, *pScreenX/2+40, *pScreenY/2-50, SafeWSTR(L"Game Over!"));
+	}
 	if(stage!=0)
 	{
 		play->Hide();
@@ -125,8 +133,8 @@ bool TestStage::Menu()
 			delete play->text_str;
 			play->text_str=SafeWSTR(L"Resume");
 
-			play->pRect->left-=12;
-			play->pRect->right+=12;
+			play->pRect->left=*pScreenX/2-30;
+			play->pRect->right=*pScreenX/2+30;
 			}
 
 			return true;
@@ -222,8 +230,8 @@ bool TestStage::Run()
 		delete play->text_str;
 		play->text_str=SafeWSTR(L"New Game");
 
-		play->pRect->left-=12;
-		play->pRect->right+=12;
+		play->pRect->left=*pScreenX/2-40;
+		play->pRect->right=*pScreenX/2+40;
 
 		GameObjectRelease(player);
 		for(int i=0 ; i<bullets.size(); i++)
