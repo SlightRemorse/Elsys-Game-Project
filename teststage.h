@@ -46,6 +46,7 @@ private:
 	std::vector<struct bullet*> bullets;
 	std::vector<struct enemy*> enemies;
 	std::vector<struct gore*> explosion;
+	FontObject* player;
 
 	void explosionSetup(int, int, int);
 	bool explosionRelease(struct gore*);
@@ -59,6 +60,7 @@ private:
 	bool bulletRelease(struct bullet*);
 	void bulletFrame();
 
+	int score;
 	int playerhealth; // Implement later
 	int refire;
 	int spawnspeed;
