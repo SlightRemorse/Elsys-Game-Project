@@ -21,6 +21,7 @@ TestStage::TestStage(GraphicsClass* pGraphics, InputClass* pInput, int* screenwi
 	player=0;
 	pts=0;
 	powerup=0;
+	speed=1;
 
 	score=0;
 
@@ -75,7 +76,6 @@ void TestStage::OnResize()
 bool up=false;
 bool TestStage::Menu()
 {
-
 	//Initialize the stage's objects
 	if(!play) play = new FontObject(*pScreenX/2-18, *pScreenY/2-40, *pScreenX/2+18, *pScreenY/2-20, SafeWSTR(L"Play"));
 	if(!options) options = new FontObject(*pScreenX/2-25, *pScreenY/2-20, *pScreenX/2+25, *pScreenY/2, SafeWSTR(L"Options"));
@@ -172,10 +172,10 @@ bool TestStage::Run()
 	delete pts->text_str;
 	pts->text_str = JoinWSTR(true, SafeWSTR(L"Score: "), IntToWSTR(score));
 
-	if(pMainInput->IsKeyDown(VK_UP)) yspeed-=1;
-	if(pMainInput->IsKeyDown(VK_DOWN)) yspeed+=1;
-	if(pMainInput->IsKeyDown(VK_LEFT)) xspeed-=1;
-	if(pMainInput->IsKeyDown(VK_RIGHT)) xspeed+=1;
+	if(pMainInput->IsKeyDown(VK_UP)) yspeed-=speed;
+	if(pMainInput->IsKeyDown(VK_DOWN)) yspeed+=speed;
+	if(pMainInput->IsKeyDown(VK_LEFT)) xspeed-=speed;
+	if(pMainInput->IsKeyDown(VK_RIGHT)) xspeed+=speed;
 
 	
 	player->MoveX(xspeed);
@@ -186,10 +186,10 @@ bool TestStage::Run()
 	yspeed=0;
 	
 
-	if(player->pRect->left<0) player->MoveX(1);
-	if(player->pRect->right>*pScreenX) player->MoveX(-1);
-	if(player->pRect->top<0) player->MoveY(1);
-	if(player->pRect->bottom>*pScreenY+1) player->MoveY(-1);
+	if(player->pRect->left<0) player->MoveX(speed);
+	if(player->pRect->right>*pScreenX) player->MoveX(-speed);
+	if(player->pRect->top<0) player->MoveY(speed);
+	if(player->pRect->bottom>*pScreenY+1) player->MoveY(-speed);
 
 	//test move bullet
 	
@@ -210,9 +210,11 @@ bool TestStage::Run()
 	}
 	spawnspeed-=elapsed;
 
+	
 	bulletFrame(); // Run the bullet Frame
 	enemyFrame(); // Run the enemy frame
 	explosionFrame(); // Run the gore/explosion frame
+	if(powerup) bonusFrame();//Run the bonus frame
 
 	if(playerhealth==0)
 	{
@@ -265,6 +267,14 @@ bool TestStage::Run()
 				GameObjectRelease(enemies[i]->pFontObject);
 				enemies.erase(enemies.begin()+i);
 				score++;
+				if(score%20==0 && score!=0)
+				{
+					if(powerup) 
+					{
+						bonusRelease(powerup);
+					}
+					bonusSetup();
+				}
 				i--;
 				}
 				GameObjectRelease(bullets[k]->pFontObject);
@@ -287,6 +297,14 @@ bool TestStage::Run()
 				GameObjectRelease(enemies[i]->pFontObject);
 				enemies.erase(enemies.begin()+i);
 				score++;
+				if(score%20==0 && score!=0)
+				{
+					if(powerup) 
+					{
+						bonusRelease(powerup);
+					}
+					bonusSetup();
+				}
 				i--;
 				}
 				GameObjectRelease(bullets[k]->pFontObject);
@@ -309,6 +327,14 @@ bool TestStage::Run()
 				GameObjectRelease(enemies[i]->pFontObject);
 				enemies.erase(enemies.begin()+i);
 				score++;
+				if(score%20==0 && score!=0)
+				{
+					if(powerup) 
+					{
+						bonusRelease(powerup);
+					}
+					bonusSetup();
+				}
 				i--;
 				}
 				GameObjectRelease(bullets[k]->pFontObject);
@@ -331,6 +357,14 @@ bool TestStage::Run()
 				GameObjectRelease(enemies[i]->pFontObject);
 				enemies.erase(enemies.begin()+i);
 				score++;
+				if(score%20==0 && score!=0)
+				{
+					if(powerup) 
+					{
+						bonusRelease(powerup);
+					}
+					bonusSetup();
+				}
 				i--;
 				}
 				GameObjectRelease(bullets[k]->pFontObject);
@@ -712,4 +746,53 @@ void TestStage::bonusSetup()
 	pNewBonus->pFontObject = new FontObject(pNewBonus->xcoord-5, pNewBonus->ycoord-5, pNewBonus->xcoord+5, pNewBonus->xcoord+9, SafeWSTR(L"P"));
 	
 	powerup = pNewBonus;
+}
+
+bool TestStage::bonusRelease(bonus* vptr)
+{
+	GameObjectRelease(vptr->pFontObject);
+	delete vptr;
+	vptr=0;
+
+	return true;
+}
+void TestStage::bonusFrame()
+{
+	if(player->pRect->left<powerup->pFontObject->pRect->right
+		&& player->pRect->left>powerup->pFontObject->pRect->left
+		&& player->pRect->top<powerup->pFontObject->pRect->bottom
+		&& player->pRect->top>powerup->pFontObject->pRect->top)
+	{
+		bulletSetup(100);
+		speed=4;
+		powerup->pFontObject->Hide();
+	}
+	else if(player->pRect->right>powerup->pFontObject->pRect->left
+			&& player->pRect->right<powerup->pFontObject->pRect->right
+			&& player->pRect->top<powerup->pFontObject->pRect->bottom
+			&& player->pRect->top>powerup->pFontObject->pRect->top) 
+	{
+		bulletSetup(100);
+		speed=4;
+		powerup->pFontObject->Hide();
+	}
+	else if(player->pRect->left<powerup->pFontObject->pRect->right
+				&& player->pRect->left>powerup->pFontObject->pRect->left
+				&& player->pRect->bottom>powerup->pFontObject->pRect->top
+				&& player->pRect->bottom<powerup->pFontObject->pRect->bottom) 
+	{
+		bulletSetup(100);
+		speed=4;
+		powerup->pFontObject->Hide();
+	}
+	else if(player->pRect->right>powerup->pFontObject->pRect->left
+				&& player->pRect->right<powerup->pFontObject->pRect->right
+				&& player->pRect->bottom>powerup->pFontObject->pRect->top
+				&& player->pRect->bottom<powerup->pFontObject->pRect->bottom) 	
+	{
+		bulletSetup(100);
+		speed=4;
+		powerup->pFontObject->Hide();
+	}
+				
 }

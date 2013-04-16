@@ -74,6 +74,7 @@ class TestStage
 	int gamestate;
 	int elapsed;
 	
+	int speed;
 	int xspeed;
 	int yspeed;
 
