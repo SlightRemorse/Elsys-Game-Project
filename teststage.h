@@ -71,6 +71,7 @@ class TestStage
 	FontObject* pts;
 	FontObject* player;
 
+	int framecount;
 	int gamestate;
 	int elapsed;
 	
@@ -116,6 +117,7 @@ private:
 	void bonusSetup();
 	bool bonusRelease(struct bonus*);
 	void bonusFrame();
+	void bonusBulletSetup(int);
 
 	int score;
 	int playerhealth; // Implement later

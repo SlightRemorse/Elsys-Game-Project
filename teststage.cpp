@@ -22,6 +22,7 @@ TestStage::TestStage(GraphicsClass* pGraphics, InputClass* pInput, int* screenwi
 	pts=0;
 	powerup=0;
 	speed=1;
+	framecount=0;
 
 	score=0;
 
@@ -172,6 +173,11 @@ bool TestStage::Run()
 	delete pts->text_str;
 	pts->text_str = JoinWSTR(true, SafeWSTR(L"Score: "), IntToWSTR(score));
 
+	// bonus realeases
+	if(framecount<=0)speed=1;
+	else framecount--;
+	//end bonus releases
+
 	if(pMainInput->IsKeyDown(VK_UP)) yspeed-=speed;
 	if(pMainInput->IsKeyDown(VK_DOWN)) yspeed+=speed;
 	if(pMainInput->IsKeyDown(VK_LEFT)) xspeed-=speed;
@@ -199,6 +205,10 @@ bool TestStage::Run()
 		{
 				bulletSetup(8);
 				refire=125;
+				if(framecount>1)
+				{
+					bonusBulletSetup(8);
+				}
 		}
 	}
 	refire-=elapsed;
@@ -544,6 +554,40 @@ void TestStage::bulletSetup(int speed)
 
 	bullets.push_back(pNewBullet);
 };
+//bonus bullet frame
+void TestStage::bonusBulletSetup(int speed)
+{
+	bullet* pNewBullet = new bullet();
+	bullet* pNewBullet2 =new bullet();
+	pNewBullet->wspeed=speed;
+	pNewBullet2->wspeed=speed;
+
+	int xline=pMainInput->MGetX()-player->pRect->left;
+	int yline=pMainInput->MGetY()-player->pRect->bottom;
+	double sline=sqrt((double)((xline*xline)+(yline*yline)));
+			
+	pNewBullet->xratio=(pNewBullet->wspeed*(xline/sline))+2;
+	pNewBullet->yratio=(pNewBullet->wspeed*(yline/sline))+2;
+	pNewBullet2->xratio=(pNewBullet->wspeed*(xline/sline))-2;
+	pNewBullet2->yratio=(pNewBullet->wspeed*(yline/sline))-2;
+
+	pNewBullet->xbuffer=0;
+	pNewBullet->ybuffer=0;
+	pNewBullet2->xbuffer=0;
+	pNewBullet2->ybuffer=0;
+
+	int centplayerx = (player->pRect->left+player->pRect->right)/2;
+	int centplayery = (player->pRect->top+player->pRect->bottom)/2;
+
+	pNewBullet->pFontObject = new FontObject(centplayerx-1, centplayery-8, centplayerx+1, centplayery+5, SafeWSTR(L"."));
+	pNewBullet2->pFontObject = new FontObject(centplayerx-1, centplayery-8, centplayerx+1, centplayery+5, SafeWSTR(L"."));
+
+	bullets.push_back(pNewBullet);
+	bullets.push_back(pNewBullet2);
+
+
+}
+//end bonus bullet frame
 
 bool TestStage::bulletRelease(bullet* pbullet)
 {
@@ -763,36 +807,36 @@ void TestStage::bonusFrame()
 		&& player->pRect->top<powerup->pFontObject->pRect->bottom
 		&& player->pRect->top>powerup->pFontObject->pRect->top)
 	{
-		bulletSetup(100);
 		speed=4;
 		powerup->pFontObject->Hide();
+		framecount=600;
 	}
 	else if(player->pRect->right>powerup->pFontObject->pRect->left
 			&& player->pRect->right<powerup->pFontObject->pRect->right
 			&& player->pRect->top<powerup->pFontObject->pRect->bottom
 			&& player->pRect->top>powerup->pFontObject->pRect->top) 
 	{
-		bulletSetup(100);
 		speed=4;
 		powerup->pFontObject->Hide();
+		framecount=600;
 	}
 	else if(player->pRect->left<powerup->pFontObject->pRect->right
 				&& player->pRect->left>powerup->pFontObject->pRect->left
 				&& player->pRect->bottom>powerup->pFontObject->pRect->top
 				&& player->pRect->bottom<powerup->pFontObject->pRect->bottom) 
 	{
-		bulletSetup(100);
 		speed=4;
 		powerup->pFontObject->Hide();
+		framecount=600;
 	}
 	else if(player->pRect->right>powerup->pFontObject->pRect->left
 				&& player->pRect->right<powerup->pFontObject->pRect->right
 				&& player->pRect->bottom>powerup->pFontObject->pRect->top
 				&& player->pRect->bottom<powerup->pFontObject->pRect->bottom) 	
 	{
-		bulletSetup(100);
 		speed=4;
 		powerup->pFontObject->Hide();
+		framecount=600;
 	}
 				
 }
