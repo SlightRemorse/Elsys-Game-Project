@@ -71,11 +71,11 @@ class TestStage
 	FontObject* pts;
 	FontObject* player;
 
-	int framecount;
+	int boost;
 	int gamestate;
 	int elapsed;
 	
-	int speed;
+	double speed;
 	int xspeed;
 	int yspeed;
 

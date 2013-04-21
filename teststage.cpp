@@ -21,8 +21,11 @@ TestStage::TestStage(GraphicsClass* pGraphics, InputClass* pInput, int* screenwi
 	player=0;
 	pts=0;
 	powerup=0;
+
+	playerhealth=2; // setting up starting health
+
 	speed=1;
-	framecount=0;
+	boost=0; // not boosted
 
 	score=0;
 
@@ -114,7 +117,6 @@ bool TestStage::Menu()
 	{
 			
 			stage = 1;
-			playerhealth=2;
 			//Hidding all the objects, but keeping their information
 			play->Hide();
 			options->Hide();
@@ -162,10 +164,11 @@ bool TestStage::Run()
 			for(int i=0; i<bullets.size(); i++) bullets[i]->pFontObject->Hide();
 			for(int i=0; i<explosion.size(); i++) explosion[i]->pFontObject->Hide();
 			if(pts) pts->Hide();
+			if(powerup) powerup->pFontObject->Hide();
 			return true;
 	}
 	//test code
-	
+
 	if(!player) player = new FontObject(*pScreenX/2-5, *pScreenY/2-5, *pScreenX/2+5, *pScreenY/2+9, SafeWSTR(L"O"), 0xFF00FF00);
 
 	if(!pts) pts = new FontObject(0,0,40,9, SafeWSTR(L"Score: "), 0xFFFFFFFF, DT_LEFT);
@@ -173,9 +176,10 @@ bool TestStage::Run()
 	delete pts->text_str;
 	pts->text_str = JoinWSTR(true, SafeWSTR(L"Score: "), IntToWSTR(score));
 
-	// bonus realeases
-	if(framecount<=0)speed=1;
-	else framecount--;
+	// bonus realizes
+	if(boost<=0)speed=1;
+	else boost-=elapsed;
+
 	//end bonus releases
 
 	if(pMainInput->IsKeyDown(VK_UP)) yspeed-=speed;
@@ -203,11 +207,15 @@ bool TestStage::Run()
 	{
 		if(refire<=0) 
 		{
-				bulletSetup(8);
-				refire=125;
-				if(framecount>1)
+				if(boost>1) 
 				{
 					bonusBulletSetup(8);
+					refire=350;
+				}
+				else 
+				{
+					bulletSetup(8);
+					refire=125;
 				}
 		}
 	}
@@ -230,6 +238,10 @@ bool TestStage::Run()
 	{
 		stage = 0;
 		gamestate=2;
+
+		playerhealth=2; // resetting the health
+		boost=0;
+
 		if(above_message) GameObjectRelease(above_message);
 		above_message = new FontObject(*pScreenX/2-40, *pScreenY/2-70, *pScreenX/2+40, *pScreenY/2-50, SafeWSTR(L"Game Over!"));
 				
@@ -237,6 +249,8 @@ bool TestStage::Run()
 
 		delete play->text_str;
 		play->text_str=SafeWSTR(L"New Game");
+
+		// Clearing up the data vectors
 
 		play->pRect->left=*pScreenX/2-40;
 		play->pRect->right=*pScreenX/2+40;
@@ -252,6 +266,16 @@ bool TestStage::Run()
 			GameObjectRelease(enemies[i]->pFontObject);
 		}
 		enemies.clear();
+		for (int i=0; i<explosion.size(); i++)
+		{
+			GameObjectRelease(explosion[i]->pFontObject);
+		}
+		explosion.clear();
+		
+		if(powerup) GameObjectRelease(powerup->pFontObject);
+		delete powerup;
+		powerup = 0;
+
 		score=0;
 
 		return true;
@@ -262,100 +286,25 @@ bool TestStage::Run()
 	{
 		for(int i = 0; i<enemies.size(); i++)
 		{
-			if(bullets[k]->pFontObject->pRect->left<enemies[i]->pFontObject->pRect->right
-			&& bullets[k]->pFontObject->pRect->left>enemies[i]->pFontObject->pRect->left
-			&& bullets[k]->pFontObject->pRect->top<enemies[i]->pFontObject->pRect->bottom
-			&& bullets[k]->pFontObject->pRect->top>enemies[i]->pFontObject->pRect->top)
-			{
-				enemies[i]->health--;
-				enemies[i]->xbuffer+=bullets[k]->xratio*0.35;
-				enemies[i]->ybuffer+=bullets[k]->yratio*0.35;
-				enemies[i]->pFontObject->text_color-=0xFFFF/2;
-				if(enemies[i]->health==0)
-				{
-				explosionSetup(enemies[i]->pFontObject->pRect->left, enemies[i]->pFontObject->pRect->top, 2);
-				GameObjectRelease(enemies[i]->pFontObject);
-				enemies.erase(enemies.begin()+i);
-				score++;
-				if(score%20==0 && score!=0)
-				{
-					if(powerup) 
-					{
-						bonusRelease(powerup);
-					}
-					bonusSetup();
-				}
-				i--;
-				}
-				GameObjectRelease(bullets[k]->pFontObject);
-				bullets.erase(bullets.begin()+k);
-				k--;
-				break;
-			}
-			else if(bullets[k]->pFontObject->pRect->right>enemies[i]->pFontObject->pRect->left
-			&& bullets[k]->pFontObject->pRect->right<enemies[i]->pFontObject->pRect->right
-			&& bullets[k]->pFontObject->pRect->top<enemies[i]->pFontObject->pRect->bottom
-			&& bullets[k]->pFontObject->pRect->top>enemies[i]->pFontObject->pRect->top) 
-			{
-				enemies[i]->health--;
-				enemies[i]->xbuffer+=bullets[k]->xratio*0.35;
-				enemies[i]->ybuffer+=bullets[k]->yratio*0.35;
-				enemies[i]->pFontObject->text_color-=0xFFFF/2;
-				if(enemies[i]->health==0)
-				{
-				explosionSetup(enemies[i]->pFontObject->pRect->left, enemies[i]->pFontObject->pRect->top, 2);
-				GameObjectRelease(enemies[i]->pFontObject);
-				enemies.erase(enemies.begin()+i);
-				score++;
-				if(score%20==0 && score!=0)
-				{
-					if(powerup) 
-					{
-						bonusRelease(powerup);
-					}
-					bonusSetup();
-				}
-				i--;
-				}
-				GameObjectRelease(bullets[k]->pFontObject);
-				bullets.erase(bullets.begin()+k);
-				k--;
-				break;
-			}
-			else if(bullets[k]->pFontObject->pRect->left<enemies[i]->pFontObject->pRect->right
+			if( (bullets[k]->pFontObject->pRect->left<enemies[i]->pFontObject->pRect->right
+				&& bullets[k]->pFontObject->pRect->left>enemies[i]->pFontObject->pRect->left
+				&& bullets[k]->pFontObject->pRect->top<enemies[i]->pFontObject->pRect->bottom
+				&& bullets[k]->pFontObject->pRect->top>enemies[i]->pFontObject->pRect->top)
+				||
+				(bullets[k]->pFontObject->pRect->right>enemies[i]->pFontObject->pRect->left
+				&& bullets[k]->pFontObject->pRect->right<enemies[i]->pFontObject->pRect->right
+				&& bullets[k]->pFontObject->pRect->top<enemies[i]->pFontObject->pRect->bottom
+				&& bullets[k]->pFontObject->pRect->top>enemies[i]->pFontObject->pRect->top) 
+				||
+				(bullets[k]->pFontObject->pRect->left<enemies[i]->pFontObject->pRect->right
 				&& bullets[k]->pFontObject->pRect->left>enemies[i]->pFontObject->pRect->left
 				&& bullets[k]->pFontObject->pRect->bottom>enemies[i]->pFontObject->pRect->top
 				&& bullets[k]->pFontObject->pRect->bottom<enemies[i]->pFontObject->pRect->bottom) 
-			{
-				enemies[i]->health--;
-				enemies[i]->xbuffer+=bullets[k]->xratio*0.35;
-				enemies[i]->ybuffer+=bullets[k]->yratio*0.35;
-				enemies[i]->pFontObject->text_color-=0xFFFF/2;
-				if(enemies[i]->health==0)
-				{
-				explosionSetup(enemies[i]->pFontObject->pRect->left, enemies[i]->pFontObject->pRect->top, 2);
-				GameObjectRelease(enemies[i]->pFontObject);
-				enemies.erase(enemies.begin()+i);
-				score++;
-				if(score%20==0 && score!=0)
-				{
-					if(powerup) 
-					{
-						bonusRelease(powerup);
-					}
-					bonusSetup();
-				}
-				i--;
-				}
-				GameObjectRelease(bullets[k]->pFontObject);
-				bullets.erase(bullets.begin()+k);
-				k--;
-				break;
-			}
-			else if(bullets[k]->pFontObject->pRect->right>enemies[i]->pFontObject->pRect->left
+				||
+				(bullets[k]->pFontObject->pRect->right>enemies[i]->pFontObject->pRect->left
 				&& bullets[k]->pFontObject->pRect->right<enemies[i]->pFontObject->pRect->right
 				&& bullets[k]->pFontObject->pRect->bottom>enemies[i]->pFontObject->pRect->top
-				&& bullets[k]->pFontObject->pRect->bottom<enemies[i]->pFontObject->pRect->bottom) 
+				&& bullets[k]->pFontObject->pRect->bottom<enemies[i]->pFontObject->pRect->bottom)) 
 			{
 				enemies[i]->health--;
 				enemies[i]->xbuffer+=bullets[k]->xratio*0.35;
@@ -372,6 +321,7 @@ bool TestStage::Run()
 					if(powerup) 
 					{
 						bonusRelease(powerup);
+						powerup=0; // Possibly not needed, still nice to have.
 					}
 					bonusSetup();
 				}
@@ -388,6 +338,7 @@ bool TestStage::Run()
 
 
 	for(int i=0; i<enemies.size(); i++) enemies[i]->pFontObject->Display();
+	if(powerup) powerup->pFontObject->Display();
 	for(int i=0; i<bullets.size(); i++) bullets[i]->pFontObject->Display();
 	for(int i=0; i<explosion.size(); i++) explosion[i]->pFontObject->Display();
 	player->Display();
@@ -557,33 +508,31 @@ void TestStage::bulletSetup(int speed)
 //bonus bullet frame
 void TestStage::bonusBulletSetup(int speed)
 {
-	bullet* pNewBullet = new bullet();
-	bullet* pNewBullet2 =new bullet();
-	pNewBullet->wspeed=speed;
-	pNewBullet2->wspeed=speed;
+	bullet* pNewBullet[5];
+	double offset=-0.5;
+	for(int i=0; i<5; i++)
+	{
+		pNewBullet[i] = new bullet();
+		pNewBullet[i]->wspeed=speed;
 
-	int xline=pMainInput->MGetX()-player->pRect->left;
-	int yline=pMainInput->MGetY()-player->pRect->bottom;
-	double sline=sqrt((double)((xline*xline)+(yline*yline)));
+		int xline=pMainInput->MGetX()-player->pRect->left;
+		int yline=pMainInput->MGetY()-player->pRect->bottom;
+		double sline=sqrt((double)((xline*xline)+(yline*yline)));
 			
-	pNewBullet->xratio=(pNewBullet->wspeed*(xline/sline))+2;
-	pNewBullet->yratio=(pNewBullet->wspeed*(yline/sline))+2;
-	pNewBullet2->xratio=(pNewBullet->wspeed*(xline/sline))-2;
-	pNewBullet2->yratio=(pNewBullet->wspeed*(yline/sline))-2;
+		pNewBullet[i]->xratio=(pNewBullet[i]->wspeed*(xline/sline))+offset;
+		pNewBullet[i]->yratio=(pNewBullet[i]->wspeed*(yline/sline))+offset;
 
-	pNewBullet->xbuffer=0;
-	pNewBullet->ybuffer=0;
-	pNewBullet2->xbuffer=0;
-	pNewBullet2->ybuffer=0;
+		pNewBullet[i]->xbuffer=0;
+		pNewBullet[i]->ybuffer=0;
 
-	int centplayerx = (player->pRect->left+player->pRect->right)/2;
-	int centplayery = (player->pRect->top+player->pRect->bottom)/2;
+		int centplayerx = (player->pRect->left+player->pRect->right)/2;
+		int centplayery = (player->pRect->top+player->pRect->bottom)/2;
 
-	pNewBullet->pFontObject = new FontObject(centplayerx-1, centplayery-8, centplayerx+1, centplayery+5, SafeWSTR(L"."));
-	pNewBullet2->pFontObject = new FontObject(centplayerx-1, centplayery-8, centplayerx+1, centplayery+5, SafeWSTR(L"."));
-
-	bullets.push_back(pNewBullet);
-	bullets.push_back(pNewBullet2);
+		pNewBullet[i]->pFontObject = new FontObject(centplayerx-1, centplayery-8, centplayerx+1, centplayery+5, SafeWSTR(L"."));
+		
+		bullets.push_back(pNewBullet[i]);
+		offset+=0.25;
+	}
 
 
 }
@@ -653,22 +602,13 @@ void TestStage::bulletFrame()
 
 		//Check if out of bounds and release
 
-		if(bullets[i]->pFontObject->pRect->top<0)
-		{	
-			bulletRelease(bullets[i]);
-			bullets.erase(bullets.begin()+i);
-		}
-		else if(bullets[i]->pFontObject->pRect->bottom > *pScreenY)
-		{	
-			bulletRelease(bullets[i]);
-			bullets.erase(bullets.begin()+i);
-		}
-		else if(bullets[i]->pFontObject->pRect->left < 0)
-		{	
-			bulletRelease(bullets[i]);
-			bullets.erase(bullets.begin()+i);
-		}
-		else if(bullets[i]->pFontObject->pRect->right > *pScreenX)
+		if((bullets[i]->pFontObject->pRect->top<0)
+		||
+		(bullets[i]->pFontObject->pRect->bottom > *pScreenY)
+		||
+		(bullets[i]->pFontObject->pRect->left < 0)
+		||
+		(bullets[i]->pFontObject->pRect->right > *pScreenX))
 		{	
 			bulletRelease(bullets[i]);
 			bullets.erase(bullets.begin()+i);
@@ -787,7 +727,7 @@ void TestStage::bonusSetup()
 	pNewBonus->xcoord=rand()%(*pScreenX-5)+10;
 	pNewBonus->ycoord=rand()%(*pScreenY-5)+10;
 	
-	pNewBonus->pFontObject = new FontObject(pNewBonus->xcoord-5, pNewBonus->ycoord-5, pNewBonus->xcoord+5, pNewBonus->xcoord+9, SafeWSTR(L"P"));
+	pNewBonus->pFontObject = new FontObject(pNewBonus->xcoord-5, pNewBonus->ycoord-5, pNewBonus->xcoord+5, pNewBonus->ycoord+9, SafeWSTR(L"P"));
 	
 	powerup = pNewBonus;
 }
@@ -796,47 +736,36 @@ bool TestStage::bonusRelease(bonus* vptr)
 {
 	GameObjectRelease(vptr->pFontObject);
 	delete vptr;
-	vptr=0;
 
 	return true;
 }
+
 void TestStage::bonusFrame()
 {
-	if(player->pRect->left<powerup->pFontObject->pRect->right
+	if((player->pRect->left<powerup->pFontObject->pRect->right
 		&& player->pRect->left>powerup->pFontObject->pRect->left
 		&& player->pRect->top<powerup->pFontObject->pRect->bottom
-		&& player->pRect->top>powerup->pFontObject->pRect->top)
+		&& player->pRect->top>powerup->pFontObject->pRect->top) 
+		|| 
+		(player->pRect->right>powerup->pFontObject->pRect->left
+		&& player->pRect->right<powerup->pFontObject->pRect->right
+		&& player->pRect->top<powerup->pFontObject->pRect->bottom
+		&& player->pRect->top>powerup->pFontObject->pRect->top) 
+		||
+		(player->pRect->left<powerup->pFontObject->pRect->right
+		&& player->pRect->left>powerup->pFontObject->pRect->left
+		&& player->pRect->bottom>powerup->pFontObject->pRect->top
+		&& player->pRect->bottom<powerup->pFontObject->pRect->bottom)
+		||
+		(player->pRect->right>powerup->pFontObject->pRect->left
+		&& player->pRect->right<powerup->pFontObject->pRect->right
+		&& player->pRect->bottom>powerup->pFontObject->pRect->top
+		&& player->pRect->bottom<powerup->pFontObject->pRect->bottom))	
 	{
-		speed=4;
-		powerup->pFontObject->Hide();
-		framecount=600;
-	}
-	else if(player->pRect->right>powerup->pFontObject->pRect->left
-			&& player->pRect->right<powerup->pFontObject->pRect->right
-			&& player->pRect->top<powerup->pFontObject->pRect->bottom
-			&& player->pRect->top>powerup->pFontObject->pRect->top) 
-	{
-		speed=4;
-		powerup->pFontObject->Hide();
-		framecount=600;
-	}
-	else if(player->pRect->left<powerup->pFontObject->pRect->right
-				&& player->pRect->left>powerup->pFontObject->pRect->left
-				&& player->pRect->bottom>powerup->pFontObject->pRect->top
-				&& player->pRect->bottom<powerup->pFontObject->pRect->bottom) 
-	{
-		speed=4;
-		powerup->pFontObject->Hide();
-		framecount=600;
-	}
-	else if(player->pRect->right>powerup->pFontObject->pRect->left
-				&& player->pRect->right<powerup->pFontObject->pRect->right
-				&& player->pRect->bottom>powerup->pFontObject->pRect->top
-				&& player->pRect->bottom<powerup->pFontObject->pRect->bottom) 	
-	{
-		speed=4;
-		powerup->pFontObject->Hide();
-		framecount=600;
+		speed=2.2;
+		bonusRelease(powerup);
+		powerup=0;
+		boost=5000; // 5 seconds of boost
 	}
 				
 }
