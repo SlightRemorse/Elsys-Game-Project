@@ -6,58 +6,12 @@
 #include <vector>
 #include <time.h>
 
+//Test Stage Class
 #include "objectwrapper.h"
 #include "graphicsclass.h"
 #include "typeconv.h"
 #include "inputclass.h"
 
-//Structs
-
-//Base Font Object struct
-struct basefont
-{
-	FontObject* pFontObject;
-
-	double yratio;
-	double xratio;
-
-	double xbuffer;
-	double ybuffer;
-};
-
-// bonus struct
-struct bonus
-{
-	int xcoord;
-	int ycoord;
-	int type;
-	FontObject* pFontObject;
-};
-//bonus end
-
-
-//"Gore" struct
-struct gore: basefont
-{
-	int lifetime;
-};
-
-//Enemy struct
-struct enemy: basefont
-{
-	int health;
-	double speed;
-};
-//End Enemy struct
-
-//Test Bullet struct
-struct bullet: basefont
-{
-	int wspeed;
-};
-//End Test struct
-
-//Test Stage Class
 class TestStage
 {
 	GraphicsClass* pMainGraphics;
@@ -100,7 +54,6 @@ private:
 	std::vector<struct bullet*> bullets;
 	std::vector<struct enemy*> enemies;
 	std::vector<struct gore*> explosion;
-	bonus* powerup;
 
 	void explosionSetup(int, int, int);
 	bool explosionRelease(struct gore*);
@@ -114,16 +67,53 @@ private:
 	bool bulletRelease(struct bullet*);
 	void bulletFrame();
 
+<<<<<<< HEAD
 	void bonusSetup();
 	bool bonusRelease(struct bonus*);
 	void bonusFrame();
 	void bonusBulletSetup(int);
 
+=======
+>>>>>>> parent of 697f0b7... create bonuses
 	int score;
 	int playerhealth; // Implement later
 	int refire;
 	int spawnspeed;
 };
 //End Test Stage Class
+
+//Base Font Object struct
+struct basefont
+{
+	FontObject* pFontObject;
+
+	double yratio;
+	double xratio;
+
+	double xbuffer;
+	double ybuffer;
+};
+
+//"Gore" struct
+struct gore: basefont
+{
+	int lifetime;
+};
+
+//Enemy struct
+struct enemy: basefont
+{
+	int health;
+	double speed;
+};
+//End Enemy struct
+
+//Test Bullet struct
+struct bullet: basefont
+{
+	int wspeed;
+};
+//End Test struct
+
 
 #endif
