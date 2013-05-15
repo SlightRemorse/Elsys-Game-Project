@@ -1,4 +1,4 @@
-//Input Class header
+//Input Class header (100% coverage)
 #ifndef _INPUTCLASS_H_
 #define _INPUTCLASS_H_
 

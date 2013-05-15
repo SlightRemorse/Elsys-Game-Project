@@ -1,4 +1,4 @@
-//Object Wrapper class for Sys Frame
+//Object Wrapper class for Sys Frame (100% coverage)
 #ifndef _OBJECT_WRAPPER_H_
 #define _OBJECT_WRAPPER_H_
 

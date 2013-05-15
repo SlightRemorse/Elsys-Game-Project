@@ -60,6 +60,7 @@ struct bullet: basefont
 //Test Stage Class
 class TestStage
 {
+public:
 	GraphicsClass* pMainGraphics;
 	InputClass* pMainInput;
 
@@ -79,7 +80,7 @@ class TestStage
 	int xspeed;
 	int yspeed;
 
-public:
+
 
 	TestStage(GraphicsClass*, InputClass*, int*, int*);
 	TestStage(const TestStage&);
@@ -95,7 +96,7 @@ public:
 	bool Run();
 	bool Menu();
 
-private:
+public:
 
 	std::vector<struct bullet*> bullets;
 	std::vector<struct enemy*> enemies;

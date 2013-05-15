@@ -240,7 +240,95 @@ TEST_CASE("CharSTRToWSTR test", "Notes")
 	delete text;
 }
 
-// Write JoinWSTR tests!!!
+TEST_CASE("JoinWSTR 2 args", "Somethingyoudon'tseebutisneeded")
+{
+	LPWSTR str1 = SafeWSTR(L"str1");
+	LPWSTR str2 = SafeWSTR(L"str2");
+
+	LPWSTR result = JoinWSTR(false, str1, str2);
+
+	REQUIRE(!wcscmp(result, L"str1str2"));
+	REQUIRE(!wcscmp(str1, L"str1"));
+	REQUIRE(!wcscmp(str2, L"str2"));
+
+	result = JoinWSTR(true, str1, str2);
+
+	REQUIRE(!wcscmp(result, L"str1str2"));
+	REQUIRE(wcscmp(str1, L"str1"));
+	REQUIRE(wcscmp(str2, L"str2"));
+}
+
+TEST_CASE("JoinWSTR 3 args", "Somethingyoudon'tseebutisneeded")
+{
+	LPWSTR str1 = SafeWSTR(L"str1");
+	LPWSTR str2 = SafeWSTR(L"str2");
+	LPWSTR str3 = SafeWSTR(L"str3");
+
+	LPWSTR result = JoinWSTR(false, str1, str2, str3);
+
+	REQUIRE(!wcscmp(result, L"str1str2str3"));
+	REQUIRE(!wcscmp(str1, L"str1"));
+	REQUIRE(!wcscmp(str2, L"str2"));
+	REQUIRE(!wcscmp(str3, L"str3"));
+
+	result = JoinWSTR(true, str1, str2, str3);
+
+	REQUIRE(!wcscmp(result, L"str1str2str3"));
+	REQUIRE(wcscmp(str1, L"str1"));
+	REQUIRE(wcscmp(str2, L"str2"));
+	REQUIRE(wcscmp(str3, L"str3"));
+}
+
+TEST_CASE("JoinWSTR 4 args", "Somethingyoudon'tseebutisneeded")
+{
+	LPWSTR str1 = SafeWSTR(L"str1");
+	LPWSTR str2 = SafeWSTR(L"str2");
+	LPWSTR str3 = SafeWSTR(L"str3");
+	LPWSTR str4 = SafeWSTR(L"str4");
+
+	LPWSTR result = JoinWSTR(false, str1, str2, str3, str4);
+
+	REQUIRE(!wcscmp(result, L"str1str2str3str4"));
+	REQUIRE(!wcscmp(str1, L"str1"));
+	REQUIRE(!wcscmp(str2, L"str2"));
+	REQUIRE(!wcscmp(str3, L"str3"));
+	REQUIRE(!wcscmp(str4, L"str4"));
+
+	result = JoinWSTR(true, str1, str2, str3, str4);
+
+	REQUIRE(!wcscmp(result, L"str1str2str3str4"));
+	REQUIRE(wcscmp(str1, L"str1"));
+	REQUIRE(wcscmp(str2, L"str2"));
+	REQUIRE(wcscmp(str3, L"str3"));
+	REQUIRE(wcscmp(str4, L"str4"));
+}
+
+TEST_CASE("JoinWSTR 5 args", "Somethingyoudon'tseebutisneeded")
+{
+	LPWSTR str1 = SafeWSTR(L"str1");
+	LPWSTR str2 = SafeWSTR(L"str2");
+	LPWSTR str3 = SafeWSTR(L"str3");
+	LPWSTR str4 = SafeWSTR(L"str4");
+	LPWSTR str5 = SafeWSTR(L"str5");
+
+	LPWSTR result = JoinWSTR(false, str1, str2, str3, str4, str5);
+
+	REQUIRE(!wcscmp(result, L"str1str2str3str4str5"));
+	REQUIRE(!wcscmp(str1, L"str1"));
+	REQUIRE(!wcscmp(str2, L"str2"));
+	REQUIRE(!wcscmp(str3, L"str3"));
+	REQUIRE(!wcscmp(str4, L"str4"));
+	REQUIRE(!wcscmp(str5, L"str5"));
+
+	result = JoinWSTR(true, str1, str2, str3, str4, str5);
+
+	REQUIRE(!wcscmp(result, L"str1str2str3str4str5"));
+	REQUIRE(wcscmp(str1, L"str1"));
+	REQUIRE(wcscmp(str2, L"str2"));
+	REQUIRE(wcscmp(str3, L"str3"));
+	REQUIRE(wcscmp(str4, L"str4"));
+	REQUIRE(wcscmp(str5, L"str5"));
+}
 
 //---------objectwrapper Files
 TEST_CASE("Font Wrapper creation", "Notes")
@@ -465,3 +553,76 @@ TEST_CASE("Move X / Move Y", "Notes")
 	GameObjectRelease(testobj);
 	delete pGC;
 }
+
+//---------teststage Files
+TEST_CASE("Test Stage creation", "Notes")
+{
+	InputClass* input = new InputClass();
+	GraphicsClass* graph = new GraphicsClass();
+
+	int x = 1024;
+	int y = 768;
+
+	TestStage* testobj = new TestStage(graph, input, &x, &y);
+
+
+	REQUIRE(testobj->pMainGraphics==graph);
+	REQUIRE(testobj->pMainInput==input);
+	
+	REQUIRE(testobj->pScreenX==&x);
+	REQUIRE(testobj->pScreenY==&y);
+
+	REQUIRE(testobj->options == 0);
+	REQUIRE(testobj->exit == 0);
+	REQUIRE(testobj->play == 0);
+	REQUIRE(testobj->above_message == 0);
+	REQUIRE(testobj->player == 0);
+	REQUIRE(testobj->pts == 0);
+	REQUIRE(testobj->powerup == 0);
+
+	REQUIRE(testobj->playerhealth==2);
+
+	REQUIRE(testobj->speed==1);
+	REQUIRE(testobj->boost==0);
+
+	REQUIRE(testobj->score==0);
+
+	REQUIRE(testobj->gamestate==0); 
+	REQUIRE(testobj->stage == 0); 
+
+	REQUIRE(testobj->refire==0);
+	REQUIRE(testobj->spawnspeed==750);
+
+}
+/* broken
+TEST_CASE("TestStage Menu", "Notes")
+{
+	InputClass* input = new InputClass();
+	GraphicsClass* graph = new GraphicsClass();
+
+	int x = 1024;
+	int y = 768;
+
+	TestStage* testobj = new TestStage(graph, input, &x, &y);
+
+	REQUIRE(testobj->play==0);
+	REQUIRE(testobj->options==0);
+	REQUIRE(testobj->exit==0);
+
+	testobj->Menu();
+
+	REQUIRE(testobj->play!=0);
+	REQUIRE(testobj->options!=0);
+	REQUIRE(testobj->exit!=0);
+
+	REQUIRE(!wcscmp(testobj->options->text_str,L"Options"));
+
+	input->MCoord(x/2, y/2-15);
+
+	REQUIRE(testobj->options->MouseOver()==true);
+	REQUIRE(!wcscmp(testobj->options->text_str,L"Options"));
+
+
+
+
+}*/

@@ -1,4 +1,4 @@
-//Graphic Wraper header (Wrapper for multiple different graphic objects)
+//Graphic Wraper header (Wrapper for multiple different graphic objects) (100% coverage)
 #ifndef _GRAPHIC_WRAPPER_H_
 #define _GRAPHIC_WRAPPER_H_
 
