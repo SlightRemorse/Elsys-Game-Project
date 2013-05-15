@@ -29,7 +29,7 @@ public:
 	int MGetX();
 	int MGetY();
 
-private:
+public:
 	void MKeyClick(unsigned int, bool);
 
 	int pressed_keys;

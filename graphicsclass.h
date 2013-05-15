@@ -36,7 +36,7 @@ public:
 
 
 
-private:
+public:
 	bool Render();
 	bool ToggleFullscreen(bool, int, int);
 

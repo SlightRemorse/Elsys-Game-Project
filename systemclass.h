@@ -30,7 +30,7 @@ public:
 
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 
-private:
+public:
 	bool Frame();
 	void InitializeWindows(int&, int&);
 	void ShutdownWindows();
